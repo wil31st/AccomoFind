@@ -50,7 +50,7 @@ export interface SearchFilters {
   query?: string;
 }
 
-export const CITIES = ['Sydney', 'Melbourne', 'London', 'Dubai', 'Singapore', 'Toronto'];
+export const CITIES = ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast'];
 
 export const PROPERTY_TYPES = ['private room', 'whole apartment', 'whole house', 'studio', 'shared room'] as const;
 
@@ -59,7 +59,9 @@ export const INCLUSIONS_LIST = ['Electricity', 'Water', 'Gas', 'Internet', 'Netf
 export const FACILITIES_LIST = ['Parking', 'Gym', 'Pool', 'Air conditioning', 'Dishwasher', 'Washing machine', 'Balcony', 'Garden', 'Storage', 'Security'];
 
 export const NATIONALITIES = [
-  'American', 'Australian', 'British', 'Brazilian', 'Canadian', 'Chinese',
-  'Filipino', 'French', 'German', 'Indian', 'Irish', 'Italian', 'Japanese',
-  'Korean', 'Malaysian', 'Pakistani', 'Spanish', 'Thai'
+  'Afghan', 'American', 'Australian', 'Bangladeshi', 'British', 'Brazilian',
+  'Canadian', 'Chinese', 'Filipino', 'French', 'German', 'Indian', 'Indonesian',
+  'Irish', 'Italian', 'Japanese', 'Korean', 'Malaysian', 'Nepalese', 'New Zealander',
+  'Pakistani', 'Singaporean', 'South African', 'Spanish', 'Sri Lankan',
+  'Taiwanese', 'Thai', 'Vietnamese',
 ];

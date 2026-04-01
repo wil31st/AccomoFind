@@ -1,6 +1,6 @@
 'use client';
 import { SlidersHorizontal, X } from 'lucide-react';
-import { SearchFilters, CITIES, PROPERTY_TYPES, INCLUSIONS_LIST } from '@/lib/types';
+import { SearchFilters, CITIES, PROPERTY_TYPES, NATIONALITIES } from '@/lib/types';
 
 interface FilterPanelProps {
   filters: SearchFilters;
@@ -10,11 +10,6 @@ interface FilterPanelProps {
 export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
   function update(key: keyof SearchFilters, value: string | number | boolean | undefined) {
     onChange({ ...filters, [key]: value || undefined });
-  }
-
-  function toggleInclusion(inc: string) {
-    // We don't have an inclusions filter in SearchFilters, inclusions are shown for info only.
-    // This could be extended; for now we skip.
   }
 
   const hasFilters = Object.values(filters).some((v) => v !== undefined && v !== '');
@@ -45,11 +40,29 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
           </label>
           <input
             type="text"
-            placeholder="Keywords..."
+            placeholder="Keywords, suburb..."
             value={filters.query || ''}
             onChange={(e) => update('query', e.target.value)}
             className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
           />
+        </div>
+
+        {/* My Nationality */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+            My Nationality
+          </label>
+          <p className="text-xs text-slate-400 mb-2">Show listings that welcome you</p>
+          <select
+            value={filters.nationality || ''}
+            onChange={(e) => update('nationality', e.target.value)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          >
+            <option value="">Any / Not specified</option>
+            {NATIONALITIES.map((n) => (
+              <option key={n} value={n}>{n}</option>
+            ))}
+          </select>
         </div>
 
         {/* City */}
@@ -89,11 +102,11 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
         {/* Max Rent */}
         <div className="mb-5">
           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-            Max Rent
+            Max Rent (AUD/week)
           </label>
           <input
             type="number"
-            placeholder="e.g. 500"
+            placeholder="e.g. 400"
             value={filters.maxRent || ''}
             onChange={(e) => update('maxRent', e.target.value ? Number(e.target.value) : undefined)}
             className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
