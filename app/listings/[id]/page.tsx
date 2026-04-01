@@ -2,14 +2,15 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  Bed, Bath, Users, BadgeCheck, MapPin, ArrowLeft, Check, X,
+  Bed, Bath, Users, MapPin, ArrowLeft, Check, X,
   Wifi, Car, Dumbbell, Waves, Wind, WashingMachine, UtensilsCrossed,
   Flower2, Lock, ChevronRight, Calendar, Clock,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { getListingById, getSimilarListings } from '@/lib/filterListings';
-import { INCLUSIONS_LIST, FACILITIES_LIST } from '@/lib/types';
+import { INCLUSIONS_LIST } from '@/lib/types';
 import ListingCard from '@/components/ListingCard';
+import ListingDetailActions from '@/components/ListingDetailActions';
 
 const FACILITY_ICONS: Record<string, React.ElementType> = {
   Parking: Car,
@@ -31,26 +32,17 @@ const TYPE_COLORS: Record<string, string> = {
   'shared room': 'bg-orange-500 text-white',
 };
 
-export default function ListingDetailPage({
-  params,
-}: {
-  params: { id: string };
-}) {
+export default function ListingDetailPage({ params }: { params: { id: string } }) {
   const listing = getListingById(params.id);
   if (!listing) notFound();
 
   const similar = getSimilarListings(listing, 3);
 
-  const availableDate = new Date(listing.availableFrom).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
+  const availableDate = new Date(listing.availableFrom).toLocaleDateString('en-AU', {
+    day: 'numeric', month: 'long', year: 'numeric',
   });
-
-  const postedDate = new Date(listing.postedAt).toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
+  const postedDate = new Date(listing.postedAt).toLocaleDateString('en-AU', {
+    day: 'numeric', month: 'short', year: 'numeric',
   });
 
   return (
@@ -70,22 +62,11 @@ export default function ListingDetailPage({
           {/* Image gallery */}
           <div className="grid grid-cols-2 gap-2 rounded-xl overflow-hidden mb-8">
             <div className="col-span-2 sm:col-span-1 relative h-72 sm:h-96">
-              <Image
-                src={listing.images[0]}
-                alt={listing.title}
-                fill
-                className="object-cover"
-                priority
-              />
+              <Image src={listing.images[0]} alt={listing.title} fill className="object-cover" priority />
             </div>
             {listing.images[1] && (
               <div className="hidden sm:block relative h-96">
-                <Image
-                  src={listing.images[1]}
-                  alt={listing.title}
-                  fill
-                  className="object-cover"
-                />
+                <Image src={listing.images[1]} alt={listing.title} fill className="object-cover" />
               </div>
             )}
           </div>
@@ -98,9 +79,7 @@ export default function ListingDetailPage({
                   {listing.type}
                 </span>
                 {listing.featured && (
-                  <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">
-                    Featured
-                  </span>
+                  <span className="px-2.5 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">Featured</span>
                 )}
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{listing.title}</h1>
@@ -112,7 +91,7 @@ export default function ListingDetailPage({
             </div>
             <div className="text-right">
               <div className="text-3xl font-bold text-teal-600">
-                {listing.rent.currency} {listing.rent.amount.toLocaleString()}
+                AUD {listing.rent.amount.toLocaleString()}
               </div>
               <div className="text-sm text-slate-500">per {listing.rent.period}</div>
             </div>
@@ -126,7 +105,7 @@ export default function ListingDetailPage({
               <div className="text-xs text-slate-500">Bedroom{listing.bedrooms !== 1 ? 's' : ''}</div>
             </div>
             <div className="text-center">
-              <Bath className="w-5 h-5 text-teal-500 mx-auto mb-1" />
+              <Bed className="w-5 h-5 text-teal-500 mx-auto mb-1" />
               <div className="font-bold text-slate-900">{listing.bathrooms}</div>
               <div className="text-xs text-slate-500">Bathroom{listing.bathrooms !== 1 ? 's' : ''}</div>
             </div>
@@ -147,10 +126,9 @@ export default function ListingDetailPage({
             </div>
           </div>
 
-          {/* Furnished badge */}
+          {/* Furnished */}
           <div className="flex items-center gap-2 mb-8">
-            <span className={clsx(
-              'px-3 py-1.5 rounded-full text-sm font-semibold',
+            <span className={clsx('px-3 py-1.5 rounded-full text-sm font-semibold',
               listing.furnished === 'furnished' ? 'bg-teal-100 text-teal-800' :
               listing.furnished === 'partially furnished' ? 'bg-amber-100 text-amber-800' :
               'bg-slate-100 text-slate-700'
@@ -161,25 +139,15 @@ export default function ListingDetailPage({
 
           {/* Inclusions */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-slate-900 mb-4">What&apos;s Included</h2>
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">What&apos;s Included in Rent</h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
               {INCLUSIONS_LIST.map((inc) => {
                 const included = listing.inclusions.includes(inc);
                 return (
-                  <div
-                    key={inc}
-                    className={clsx(
-                      'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm',
-                      included
-                        ? 'bg-green-50 border-green-200 text-green-800'
-                        : 'bg-slate-50 border-slate-200 text-slate-400'
-                    )}
-                  >
-                    {included ? (
-                      <Check className="w-4 h-4 text-green-600 shrink-0" />
-                    ) : (
-                      <X className="w-4 h-4 text-slate-300 shrink-0" />
-                    )}
+                  <div key={inc} className={clsx('flex items-center gap-2 px-3 py-2 rounded-lg border text-sm',
+                    included ? 'bg-green-50 border-green-200 text-green-800' : 'bg-slate-50 border-slate-200 text-slate-400'
+                  )}>
+                    {included ? <Check className="w-4 h-4 text-green-600 shrink-0" /> : <X className="w-4 h-4 text-slate-300 shrink-0" />}
                     {inc}
                   </div>
                 );
@@ -195,10 +163,7 @@ export default function ListingDetailPage({
                 {listing.facilities.map((f) => {
                   const Icon = FACILITY_ICONS[f];
                   return (
-                    <span
-                      key={f}
-                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700"
-                    >
+                    <span key={f} className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700">
                       {Icon && <Icon className="w-4 h-4 text-teal-500" />}
                       {f}
                     </span>
@@ -221,9 +186,7 @@ export default function ListingDetailPage({
               <div>
                 <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Nationality</div>
                 <div className="text-slate-800 font-medium">
-                  {listing.preferredNationality.length === 0
-                    ? 'Any'
-                    : listing.preferredNationality.join(', ')}
+                  {listing.preferredNationality.length === 0 ? 'Any welcome' : listing.preferredNationality.join(', ')}
                 </div>
               </div>
               <div>
@@ -254,65 +217,9 @@ export default function ListingDetailPage({
           </div>
         </div>
 
-        {/* ── Right column ────────────────────────────────────────────── */}
+        {/* ── Right column — client component ─────────────────────────── */}
         <div className="mt-8 lg:mt-0">
-          <div className="sticky top-24 space-y-4">
-            {/* Posted by card */}
-            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
-              <h3 className="font-semibold text-slate-900 mb-4">Listed by</h3>
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-11 h-11 rounded-full bg-teal-100 flex items-center justify-center shrink-0">
-                  <span className="text-lg font-bold text-teal-600">
-                    {listing.postedBy.name.charAt(0)}
-                  </span>
-                </div>
-                <div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-slate-900">{listing.postedBy.name}</span>
-                    {listing.postedBy.verified && (
-                      <BadgeCheck className="w-4 h-4 text-teal-500" />
-                    )}
-                  </div>
-                  <div className="text-xs text-slate-500 capitalize">{listing.postedBy.type}</div>
-                </div>
-              </div>
-
-              <div className="space-y-2 text-sm text-slate-600 mb-5 pb-4 border-b border-slate-100">
-                <div className="flex justify-between">
-                  <span>Response time</span>
-                  <span className="font-medium text-slate-800">{listing.postedBy.responseTime}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Available from</span>
-                  <span className="font-medium text-slate-800">{availableDate}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Rent</span>
-                  <span className="font-medium text-slate-800">
-                    {listing.rent.currency} {listing.rent.amount.toLocaleString()}/{listing.rent.period}
-                  </span>
-                </div>
-              </div>
-
-              <button className="w-full py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors">
-                Message
-              </button>
-              <button className="w-full mt-2 py-3 border border-teal-200 text-teal-700 font-semibold rounded-lg hover:bg-teal-50 transition-colors">
-                Save listing
-              </button>
-            </div>
-
-            {/* Quick links */}
-            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
-              <p className="text-sm font-semibold text-slate-700 mb-2">Looking for something similar?</p>
-              <Link
-                href={`/listings?city=${encodeURIComponent(listing.location.city)}`}
-                className="block text-center py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:border-teal-300 hover:text-teal-600 transition-colors"
-              >
-                More in {listing.location.city}
-              </Link>
-            </div>
-          </div>
+          <ListingDetailActions listing={listing} availableDate={availableDate} />
         </div>
       </div>
 
@@ -321,27 +228,18 @@ export default function ListingDetailPage({
         <div className="mt-14">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-900">Similar Listings</h2>
-            <Link
-              href="/listings"
-              className="flex items-center gap-1 text-sm text-teal-600 hover:text-teal-800 transition-colors"
-            >
+            <Link href="/listings" className="flex items-center gap-1 text-sm text-teal-600 hover:text-teal-800 transition-colors">
               View all <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {similar.map((l) => (
-              <ListingCard key={l.id} listing={l} />
-            ))}
+            {similar.map((l) => <ListingCard key={l.id} listing={l} />)}
           </div>
         </div>
       )}
 
-      {/* Back link */}
       <div className="mt-10">
-        <Link
-          href="/listings"
-          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-teal-600 transition-colors"
-        >
+        <Link href="/listings" className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-teal-600 transition-colors">
           <ArrowLeft className="w-4 h-4" />
           Back to all listings
         </Link>
