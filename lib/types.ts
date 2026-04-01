@@ -51,6 +51,7 @@ export interface SearchFilters {
   nationality?: string;
   gender?: string;
   petsAllowed?: boolean;
+  availableBy?: string;   // ISO date YYYY-MM-DD — show listings available on or before this date
   query?: string;
 }
 

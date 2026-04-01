@@ -17,6 +17,8 @@ export function filterListings(filters: SearchFilters): Listing[] {
       if (listing.preferredGender !== 'any' && listing.preferredGender !== filters.gender) return false;
     }
     if (filters.petsAllowed === true && !listing.petsAllowed) return false;
+    // Available by: listing must be available on or before the requested date
+    if (filters.availableBy && listing.availableFrom > filters.availableBy) return false;
     if (filters.query) {
       const q = filters.query.toLowerCase();
       const searchable = `${listing.title} ${listing.location.city} ${listing.location.suburb} ${listing.location.postcode} ${listing.location.address} ${listing.description}`.toLowerCase();

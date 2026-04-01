@@ -15,6 +15,7 @@ export async function GET(request: NextRequest) {
     nationality: searchParams.get('nationality') || undefined,
     gender: searchParams.get('gender') || undefined,
     petsAllowed: searchParams.get('petsAllowed') === 'true' ? true : undefined,
+    availableBy: searchParams.get('availableBy') || undefined,
     query: searchParams.get('query') || undefined,
   };
   const results = filterListings(filters);

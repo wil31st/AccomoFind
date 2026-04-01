@@ -22,6 +22,7 @@ function ListingsPageInner() {
     nationality: params.get('nationality') || undefined,
     gender: params.get('gender') || undefined,
     petsAllowed: params.get('petsAllowed') === 'true' ? true : undefined,
+    availableBy: params.get('availableBy') || undefined,
     query: params.get('query') || undefined,
   };
 
@@ -38,6 +39,7 @@ function ListingsPageInner() {
       if (newFilters.nationality) next.set('nationality', newFilters.nationality);
       if (newFilters.gender) next.set('gender', newFilters.gender);
       if (newFilters.petsAllowed) next.set('petsAllowed', 'true');
+      if (newFilters.availableBy) next.set('availableBy', newFilters.availableBy);
       if (newFilters.query) next.set('query', newFilters.query);
       router.push(`/listings?${next.toString()}`);
     },

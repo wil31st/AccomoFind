@@ -1,5 +1,5 @@
 'use client';
-import { SlidersHorizontal, X } from 'lucide-react';
+import { SlidersHorizontal, X, Calendar } from 'lucide-react';
 import { SearchFilters, AUSTRALIAN_STATES, PROPERTY_TYPES, NATIONALITIES } from '@/lib/types';
 
 interface FilterPanelProps {
@@ -204,6 +204,29 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               </button>
             ))}
           </div>
+        </div>
+
+        {/* Available by */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+            <Calendar className="w-3.5 h-3.5 inline mr-1" />
+            Available By
+          </label>
+          <p className="text-[11px] text-slate-400 mb-2">Show listings available on or before this date</p>
+          <input
+            type="date"
+            value={filters.availableBy || ''}
+            onChange={(e) => update('availableBy', e.target.value || undefined)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          />
+          {filters.availableBy && (
+            <button
+              onClick={() => update('availableBy', undefined)}
+              className="text-[11px] text-red-400 hover:text-red-600 mt-1 transition-colors"
+            >
+              Clear date
+            </button>
+          )}
         </div>
 
         {/* Pets allowed */}
