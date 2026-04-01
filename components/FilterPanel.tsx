@@ -1,61 +1,36 @@
 'use client';
-
-import { useRouter, useSearchParams } from 'next/navigation';
 import { SlidersHorizontal, X } from 'lucide-react';
-import { CITIES, NATIONALITIES } from '@/data/listings';
+import { SearchFilters, CITIES, PROPERTY_TYPES, INCLUSIONS_LIST } from '@/lib/types';
 
-export default function FilterPanel() {
-  const router = useRouter();
-  const params = useSearchParams();
+interface FilterPanelProps {
+  filters: SearchFilters;
+  onChange: (filters: SearchFilters) => void;
+}
 
-  const type = params.get('type') || '';
-  const city = params.get('city') || '';
-  const minBedrooms = params.get('minBedrooms') || '';
-  const nationalities = params.get('nationalities')?.split(',').filter(Boolean) || [];
-
-  function update(key: string, value: string | null) {
-    const next = new URLSearchParams(params.toString());
-    if (value === null || value === '') {
-      next.delete(key);
-    } else {
-      next.set(key, value);
-    }
-    // Reset to first page
-    next.delete('q');
-    router.push(`/listings?${next.toString()}`);
+export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
+  function update(key: keyof SearchFilters, value: string | number | boolean | undefined) {
+    onChange({ ...filters, [key]: value || undefined });
   }
 
-  function toggleNationality(nat: string) {
-    const next = nationalities.includes(nat)
-      ? nationalities.filter((n) => n !== nat)
-      : [...nationalities, nat];
-    const nxtParams = new URLSearchParams(params.toString());
-    if (next.length === 0) {
-      nxtParams.delete('nationalities');
-    } else {
-      nxtParams.set('nationalities', next.join(','));
-    }
-    router.push(`/listings?${nxtParams.toString()}`);
+  function toggleInclusion(inc: string) {
+    // We don't have an inclusions filter in SearchFilters, inclusions are shown for info only.
+    // This could be extended; for now we skip.
   }
 
-  function clearAll() {
-    router.push('/listings');
-  }
-
-  const hasFilters = type || city || minBedrooms || nationalities.length > 0;
+  const hasFilters = Object.values(filters).some((v) => v !== undefined && v !== '');
 
   return (
-    <aside className="w-full lg:w-72 shrink-0">
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 sticky top-24">
+    <aside className="w-80 shrink-0">
+      <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-5 sticky top-24">
         <div className="flex items-center justify-between mb-5">
-          <div className="flex items-center gap-2 font-semibold text-gray-900">
-            <SlidersHorizontal className="w-4 h-4 text-indigo-600" />
+          <div className="flex items-center gap-2 font-semibold text-slate-900">
+            <SlidersHorizontal className="w-4 h-4 text-teal-600" />
             Filters
           </div>
           {hasFilters && (
             <button
-              onClick={clearAll}
-              className="flex items-center gap-1 text-xs text-gray-500 hover:text-red-500 transition-colors"
+              onClick={() => onChange({})}
+              className="flex items-center gap-1 text-xs text-slate-500 hover:text-red-500 transition-colors"
             >
               <X className="w-3 h-3" />
               Clear all
@@ -63,95 +38,150 @@ export default function FilterPanel() {
           )}
         </div>
 
-        {/* Property type */}
+        {/* Search query */}
         <div className="mb-5">
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-            Property Type
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            Search
           </label>
-          <div className="flex flex-wrap gap-1.5">
-            {['', 'apartment', 'house', 'studio', 'villa', 'penthouse', 'townhouse', 'serviced apartment', 'co-living'].map((t) => (
-              <button
-                key={t}
-                onClick={() => update('type', t)}
-                className={`px-3 py-1.5 text-xs font-medium rounded-full border transition-all capitalize ${
-                  type === t
-                    ? 'bg-indigo-600 text-white border-indigo-600'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
-                }`}
-              >
-                {t === '' ? 'All Types' : t}
-              </button>
-            ))}
-          </div>
+          <input
+            type="text"
+            placeholder="Keywords..."
+            value={filters.query || ''}
+            onChange={(e) => update('query', e.target.value)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          />
         </div>
 
         {/* City */}
         <div className="mb-5">
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
             City
           </label>
           <select
-            value={city}
+            value={filters.city || ''}
             onChange={(e) => update('city', e.target.value)}
-            className="w-full text-sm border-gray-200 rounded-lg py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
           >
             <option value="">All Cities</option>
             {CITIES.map((c) => (
-              <option key={c} value={c}>
-                {c}
-              </option>
+              <option key={c} value={c}>{c}</option>
             ))}
           </select>
         </div>
 
+        {/* Property type */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            Property Type
+          </label>
+          <select
+            value={filters.type || ''}
+            onChange={(e) => update('type', e.target.value)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          >
+            <option value="">Any Type</option>
+            {PROPERTY_TYPES.map((t) => (
+              <option key={t} value={t} className="capitalize">{t}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Max Rent */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            Max Rent
+          </label>
+          <input
+            type="number"
+            placeholder="e.g. 500"
+            value={filters.maxRent || ''}
+            onChange={(e) => update('maxRent', e.target.value ? Number(e.target.value) : undefined)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          />
+        </div>
+
         {/* Bedrooms */}
         <div className="mb-5">
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
             Min. Bedrooms
           </label>
-          <div className="flex gap-2">
-            {['', '1', '2', '3', '4'].map((b) => (
+          <div className="flex gap-1.5">
+            {[
+              { label: 'Any', value: '' },
+              { label: '1+', value: '1' },
+              { label: '2+', value: '2' },
+              { label: '3+', value: '3' },
+              { label: '4+', value: '4' },
+            ].map((opt) => (
               <button
-                key={b}
-                onClick={() => update('minBedrooms', b)}
+                key={opt.label}
+                onClick={() => update('bedrooms', opt.value ? Number(opt.value) : undefined)}
                 className={`flex-1 py-2 text-xs font-medium rounded-lg border transition-all ${
-                  minBedrooms === b
-                    ? 'bg-indigo-600 text-white border-indigo-600'
-                    : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-300'
+                  (filters.bedrooms?.toString() || '') === opt.value
+                    ? 'bg-teal-600 text-white border-teal-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-teal-400'
                 }`}
               >
-                {b === '' ? 'Any' : b + '+'}
+                {opt.label}
               </button>
             ))}
           </div>
         </div>
 
-        {/* Nationality Communities */}
-        <div>
-          <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">
-            Nationality Community
+        {/* Furnished */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            Furnished
           </label>
-          <p className="text-xs text-gray-400 mb-3">
-            Find homes near your community
-          </p>
-          <div className="flex flex-wrap gap-1.5 max-h-52 overflow-y-auto">
-            {NATIONALITIES.map((nat) => {
-              const active = nationalities.includes(nat);
-              return (
-                <button
-                  key={nat}
-                  onClick={() => toggleNationality(nat)}
-                  className={`px-2.5 py-1 text-xs font-medium rounded-full border transition-all ${
-                    active
-                      ? 'bg-indigo-600 text-white border-indigo-600'
-                      : 'bg-white text-gray-600 border-gray-200 hover:border-indigo-400 hover:text-indigo-600'
-                  }`}
-                >
-                  {nat}
-                </button>
-              );
-            })}
+          <select
+            value={filters.furnished || ''}
+            onChange={(e) => update('furnished', e.target.value)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          >
+            <option value="">Any</option>
+            <option value="furnished">Furnished</option>
+            <option value="unfurnished">Unfurnished</option>
+            <option value="partially furnished">Partially furnished</option>
+          </select>
+        </div>
+
+        {/* Gender preference */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+            Gender Preference
+          </label>
+          <div className="flex gap-1.5">
+            {[
+              { label: 'Any', value: 'any' },
+              { label: 'Male', value: 'male' },
+              { label: 'Female', value: 'female' },
+            ].map((opt) => (
+              <button
+                key={opt.value}
+                onClick={() => update('gender', opt.value === 'any' ? undefined : opt.value)}
+                className={`flex-1 py-2 text-xs font-medium rounded-lg border transition-all ${
+                  (filters.gender || 'any') === opt.value
+                    ? 'bg-teal-600 text-white border-teal-600'
+                    : 'bg-white text-slate-600 border-slate-200 hover:border-teal-400'
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
           </div>
+        </div>
+
+        {/* Pets allowed */}
+        <div className="mb-1">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={filters.petsAllowed === true}
+              onChange={(e) => update('petsAllowed', e.target.checked ? true : undefined)}
+              className="w-4 h-4 rounded text-teal-600 border-slate-300 focus:ring-teal-500"
+            />
+            <span className="text-sm text-slate-700 font-medium">Pets allowed</span>
+          </label>
         </div>
       </div>
     </aside>

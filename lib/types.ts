@@ -1,47 +1,65 @@
 export interface Listing {
   id: string;
   title: string;
-  type: 'apartment' | 'house' | 'studio' | 'villa' | 'penthouse' | 'townhouse' | 'serviced apartment' | 'co-living';
-  price: number;
-  currency: string;
+  type: 'private room' | 'whole apartment' | 'whole house' | 'studio' | 'shared room';
   location: {
     city: string;
-    neighborhood: string;
+    suburb: string;
     country: string;
-    address: string;
   };
+  rent: {
+    amount: number;
+    currency: string;
+    period: 'week' | 'month';
+  };
+  inclusions: string[];
   bedrooms: number;
   bathrooms: number;
-  area: number;
-  images: string[];
-  amenities: string[];
-  description: string;
-  nationalityCommunities: string[];
-  available: boolean;
+  currentOccupants: number;
+  totalCapacity: number;
+  furnished: 'furnished' | 'unfurnished' | 'partially furnished';
+  facilities: string[];
+  preferredNationality: string[];
+  preferredGender: 'male' | 'female' | 'any';
+  petsAllowed: boolean;
+  smokingAllowed: boolean;
   availableFrom: string;
-  owner: {
+  minimumStay: string;
+  images: string[];
+  description: string;
+  postedBy: {
     name: string;
-    avatar: string;
+    type: 'owner' | 'agent' | 'current tenant';
+    responseTime: string;
     verified: boolean;
   };
-  rating: number;
-  reviews: number;
-  featured: boolean;
+  postedAt: string;
+  featured?: boolean;
 }
 
 export interface SearchFilters {
-  query?: string;
-  type?: 'apartment' | 'house' | 'studio' | 'villa' | 'penthouse' | 'townhouse' | 'serviced apartment' | 'co-living' | '';
   city?: string;
-  minPrice?: number;
-  maxPrice?: number;
-  minBedrooms?: number;
-  nationalityCommunities?: string[];
-  amenities?: string[];
+  type?: string;
+  minRent?: number;
+  maxRent?: number;
+  bedrooms?: number;
+  furnished?: string;
+  nationality?: string;
+  gender?: string;
+  petsAllowed?: boolean;
+  query?: string;
 }
 
-export interface AISearchResult {
-  filters: SearchFilters;
-  explanation: string;
-  listings: Listing[];
-}
+export const CITIES = ['Sydney', 'Melbourne', 'London', 'Dubai', 'Singapore', 'Toronto'];
+
+export const PROPERTY_TYPES = ['private room', 'whole apartment', 'whole house', 'studio', 'shared room'] as const;
+
+export const INCLUSIONS_LIST = ['Electricity', 'Water', 'Gas', 'Internet', 'Netflix', 'Cleaning service', 'Council tax'];
+
+export const FACILITIES_LIST = ['Parking', 'Gym', 'Pool', 'Air conditioning', 'Dishwasher', 'Washing machine', 'Balcony', 'Garden', 'Storage', 'Security'];
+
+export const NATIONALITIES = [
+  'American', 'Australian', 'British', 'Brazilian', 'Canadian', 'Chinese',
+  'Filipino', 'French', 'German', 'Indian', 'Irish', 'Italian', 'Japanese',
+  'Korean', 'Malaysian', 'Pakistani', 'Spanish', 'Thai'
+];

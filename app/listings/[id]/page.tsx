@@ -2,21 +2,33 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import {
-  Bed, Bath, Maximize, Star, BadgeCheck, MapPin,
-  ArrowLeft, Wifi, Car, TreePine, Dumbbell, Waves,
-  ChevronRight,
+  Bed, Bath, Users, BadgeCheck, MapPin, ArrowLeft, Check, X,
+  Wifi, Car, Dumbbell, Waves, Wind, WashingMachine, UtensilsCrossed,
+  Flower2, Lock, ChevronRight, Calendar, Clock,
 } from 'lucide-react';
 import clsx from 'clsx';
 import { getListingById, getSimilarListings } from '@/lib/filterListings';
-import { CURRENCIES } from '@/data/listings';
+import { INCLUSIONS_LIST, FACILITIES_LIST } from '@/lib/types';
 import ListingCard from '@/components/ListingCard';
 
-const amenityIcons: Record<string, React.ElementType> = {
-  WiFi: Wifi,
+const FACILITY_ICONS: Record<string, React.ElementType> = {
   Parking: Car,
-  Garden: TreePine,
   Gym: Dumbbell,
   Pool: Waves,
+  'Air conditioning': Wind,
+  'Washing machine': WashingMachine,
+  Dishwasher: UtensilsCrossed,
+  Garden: Flower2,
+  Security: Lock,
+  Internet: Wifi,
+};
+
+const TYPE_COLORS: Record<string, string> = {
+  'private room': 'bg-teal-600 text-white',
+  'whole apartment': 'bg-blue-600 text-white',
+  'whole house': 'bg-emerald-600 text-white',
+  'studio': 'bg-violet-600 text-white',
+  'shared room': 'bg-orange-500 text-white',
 };
 
 export default function ListingDetailPage({
@@ -28,24 +40,35 @@ export default function ListingDetailPage({
   if (!listing) notFound();
 
   const similar = getSimilarListings(listing, 3);
-  const symbol = CURRENCIES[listing.currency] ?? listing.currency + ' ';
+
+  const availableDate = new Date(listing.availableFrom).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'long',
+    year: 'numeric',
+  });
+
+  const postedDate = new Date(listing.postedAt).toLocaleDateString('en-GB', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-        <Link href="/" className="hover:text-indigo-600 transition-colors">Home</Link>
+      <nav className="flex items-center gap-2 text-sm text-slate-500 mb-6">
+        <Link href="/" className="hover:text-teal-600 transition-colors">Home</Link>
         <ChevronRight className="w-4 h-4" />
-        <Link href="/listings" className="hover:text-indigo-600 transition-colors">Listings</Link>
+        <Link href="/listings" className="hover:text-teal-600 transition-colors">Listings</Link>
         <ChevronRight className="w-4 h-4" />
-        <span className="text-gray-900 font-medium truncate">{listing.title}</span>
+        <span className="text-slate-900 font-medium truncate">{listing.title}</span>
       </nav>
 
       <div className="lg:grid lg:grid-cols-3 lg:gap-10">
-        {/* ── Left column ───────────────────────────────────────── */}
+        {/* ── Left column ─────────────────────────────────────────────── */}
         <div className="lg:col-span-2">
           {/* Image gallery */}
-          <div className="grid grid-cols-2 gap-2 rounded-2xl overflow-hidden mb-8">
+          <div className="grid grid-cols-2 gap-2 rounded-xl overflow-hidden mb-8">
             <div className="col-span-2 sm:col-span-1 relative h-72 sm:h-96">
               <Image
                 src={listing.images[0]}
@@ -68,20 +91,10 @@ export default function ListingDetailPage({
           </div>
 
           {/* Title + badges */}
-          <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
+          <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
             <div>
               <div className="flex items-center gap-2 mb-2">
-                <span className={clsx(
-                  'px-2.5 py-1 text-xs font-semibold rounded-full capitalize text-white',
-                  listing.type === 'apartment' && 'bg-indigo-600',
-                  listing.type === 'house' && 'bg-emerald-600',
-                  listing.type === 'studio' && 'bg-violet-600',
-                  listing.type === 'villa' && 'bg-amber-600',
-                  listing.type === 'penthouse' && 'bg-rose-600',
-                  listing.type === 'townhouse' && 'bg-teal-600',
-                  listing.type === 'serviced apartment' && 'bg-blue-600',
-                  listing.type === 'co-living' && 'bg-orange-500',
-                )}>
+                <span className={clsx('px-2.5 py-1 text-xs font-semibold rounded-full capitalize', TYPE_COLORS[listing.type] ?? 'bg-slate-600 text-white')}>
                   {listing.type}
                 </span>
                 {listing.featured && (
@@ -90,163 +103,213 @@ export default function ListingDetailPage({
                   </span>
                 )}
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
-                {listing.title}
-              </h1>
-              <p className="flex items-center gap-1.5 mt-2 text-gray-500">
+              <h1 className="text-2xl sm:text-3xl font-bold text-slate-900">{listing.title}</h1>
+              <p className="flex items-center gap-1.5 mt-2 text-slate-500">
                 <MapPin className="w-4 h-4" />
-                {listing.location.address}, {listing.location.city},{' '}
-                {listing.location.country}
+                {listing.location.suburb}, {listing.location.city}, {listing.location.country}
               </p>
+              <p className="text-xs text-slate-400 mt-1">Posted {postedDate}</p>
             </div>
             <div className="text-right">
-              <div className="text-3xl font-bold text-indigo-600">
-                {symbol}{listing.price.toLocaleString()}
+              <div className="text-3xl font-bold text-teal-600">
+                {listing.rent.currency} {listing.rent.amount.toLocaleString()}
               </div>
-              <div className="text-sm text-gray-500">per month</div>
+              <div className="text-sm text-slate-500">per {listing.rent.period}</div>
             </div>
           </div>
 
-          {/* Key stats */}
-          <div className="grid grid-cols-3 gap-4 p-5 bg-gray-50 rounded-2xl mb-6">
+          {/* Details grid */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 p-5 bg-slate-50 rounded-xl mb-8">
             <div className="text-center">
-              <Bed className="w-6 h-6 text-indigo-500 mx-auto mb-1" />
-              <div className="font-bold text-gray-900">{listing.bedrooms}</div>
-              <div className="text-xs text-gray-500">Bedroom{listing.bedrooms !== 1 ? 's' : ''}</div>
+              <Bed className="w-5 h-5 text-teal-500 mx-auto mb-1" />
+              <div className="font-bold text-slate-900">{listing.bedrooms}</div>
+              <div className="text-xs text-slate-500">Bedroom{listing.bedrooms !== 1 ? 's' : ''}</div>
             </div>
             <div className="text-center">
-              <Bath className="w-6 h-6 text-indigo-500 mx-auto mb-1" />
-              <div className="font-bold text-gray-900">{listing.bathrooms}</div>
-              <div className="text-xs text-gray-500">Bathroom{listing.bathrooms !== 1 ? 's' : ''}</div>
+              <Bath className="w-5 h-5 text-teal-500 mx-auto mb-1" />
+              <div className="font-bold text-slate-900">{listing.bathrooms}</div>
+              <div className="text-xs text-slate-500">Bathroom{listing.bathrooms !== 1 ? 's' : ''}</div>
             </div>
             <div className="text-center">
-              <Maximize className="w-6 h-6 text-indigo-500 mx-auto mb-1" />
-              <div className="font-bold text-gray-900">{listing.area}</div>
-              <div className="text-xs text-gray-500">m²</div>
+              <Users className="w-5 h-5 text-teal-500 mx-auto mb-1" />
+              <div className="font-bold text-slate-900">{listing.currentOccupants}/{listing.totalCapacity}</div>
+              <div className="text-xs text-slate-500">Occupants</div>
+            </div>
+            <div className="text-center">
+              <Calendar className="w-5 h-5 text-teal-500 mx-auto mb-1" />
+              <div className="font-bold text-slate-900 text-xs leading-tight">{availableDate}</div>
+              <div className="text-xs text-slate-500">Available from</div>
+            </div>
+            <div className="text-center">
+              <Clock className="w-5 h-5 text-teal-500 mx-auto mb-1" />
+              <div className="font-bold text-slate-900 text-xs leading-tight">{listing.minimumStay}</div>
+              <div className="text-xs text-slate-500">Min. stay</div>
             </div>
           </div>
 
-          {/* Description */}
+          {/* Furnished badge */}
+          <div className="flex items-center gap-2 mb-8">
+            <span className={clsx(
+              'px-3 py-1.5 rounded-full text-sm font-semibold',
+              listing.furnished === 'furnished' ? 'bg-teal-100 text-teal-800' :
+              listing.furnished === 'partially furnished' ? 'bg-amber-100 text-amber-800' :
+              'bg-slate-100 text-slate-700'
+            )}>
+              {listing.furnished.charAt(0).toUpperCase() + listing.furnished.slice(1)}
+            </span>
+          </div>
+
+          {/* Inclusions */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">About this property</h2>
-            <p className="text-gray-600 leading-relaxed">{listing.description}</p>
-          </div>
-
-          {/* Amenities */}
-          <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-3">Amenities</h2>
-            <div className="flex flex-wrap gap-2">
-              {listing.amenities.map((a) => {
-                const Icon = amenityIcons[a];
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">What&apos;s Included</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+              {INCLUSIONS_LIST.map((inc) => {
+                const included = listing.inclusions.includes(inc);
                 return (
-                  <span
-                    key={a}
-                    className="flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-full text-sm text-gray-700"
+                  <div
+                    key={inc}
+                    className={clsx(
+                      'flex items-center gap-2 px-3 py-2 rounded-lg border text-sm',
+                      included
+                        ? 'bg-green-50 border-green-200 text-green-800'
+                        : 'bg-slate-50 border-slate-200 text-slate-400'
+                    )}
                   >
-                    {Icon && <Icon className="w-4 h-4 text-indigo-500" />}
-                    {a}
-                  </span>
+                    {included ? (
+                      <Check className="w-4 h-4 text-green-600 shrink-0" />
+                    ) : (
+                      <X className="w-4 h-4 text-slate-300 shrink-0" />
+                    )}
+                    {inc}
+                  </div>
                 );
               })}
             </div>
           </div>
 
-          {/* Nationality communities */}
+          {/* Facilities */}
+          {listing.facilities.length > 0 && (
+            <div className="mb-8">
+              <h2 className="text-lg font-semibold text-slate-900 mb-4">Facilities</h2>
+              <div className="flex flex-wrap gap-2">
+                {listing.facilities.map((f) => {
+                  const Icon = FACILITY_ICONS[f];
+                  return (
+                    <span
+                      key={f}
+                      className="flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 rounded-lg text-sm text-slate-700"
+                    >
+                      {Icon && <Icon className="w-4 h-4 text-teal-500" />}
+                      {f}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          )}
+
+          {/* Description */}
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-gray-900 mb-1">
-              Nearby Communities
-            </h2>
-            <p className="text-sm text-gray-500 mb-3">
-              Expat communities popular in this neighbourhood
-            </p>
-            <div className="flex flex-wrap gap-2">
-              {listing.nationalityCommunities.map((nc) => (
-                <Link
-                  key={nc}
-                  href={`/listings?nationalities=${encodeURIComponent(nc)}`}
-                  className="px-3 py-1.5 bg-indigo-50 border border-indigo-100 text-indigo-700 rounded-full text-sm font-medium hover:bg-indigo-100 transition-colors"
-                >
-                  {nc} community
-                </Link>
-              ))}
+            <h2 className="text-lg font-semibold text-slate-900 mb-3">About this listing</h2>
+            <p className="text-slate-600 leading-relaxed">{listing.description}</p>
+          </div>
+
+          {/* Tenant preferences */}
+          <div className="mb-8 p-5 bg-slate-50 rounded-xl border border-slate-200">
+            <h2 className="text-lg font-semibold text-slate-900 mb-4">Tenant Preferences</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+              <div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Nationality</div>
+                <div className="text-slate-800 font-medium">
+                  {listing.preferredNationality.length === 0
+                    ? 'Any'
+                    : listing.preferredNationality.join(', ')}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Gender</div>
+                <div className="text-slate-800 font-medium capitalize">{listing.preferredGender}</div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Pets</div>
+                <div className={clsx('font-medium', listing.petsAllowed ? 'text-green-700' : 'text-red-600')}>
+                  {listing.petsAllowed ? 'Allowed' : 'Not allowed'}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Smoking</div>
+                <div className={clsx('font-medium', listing.smokingAllowed ? 'text-green-700' : 'text-red-600')}>
+                  {listing.smokingAllowed ? 'Allowed' : 'Not allowed'}
+                </div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Min. Stay</div>
+                <div className="text-slate-800 font-medium">{listing.minimumStay}</div>
+              </div>
+              <div>
+                <div className="text-xs text-slate-500 uppercase tracking-wide font-semibold mb-1">Available</div>
+                <div className="text-slate-800 font-medium">{availableDate}</div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ── Right column ──────────────────────────────────────── */}
+        {/* ── Right column ────────────────────────────────────────────── */}
         <div className="mt-8 lg:mt-0">
           <div className="sticky top-24 space-y-4">
-            {/* Owner card */}
-            <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-              <h3 className="font-semibold text-gray-900 mb-4">Listed by</h3>
-              <div className="flex items-center gap-3 mb-5">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden shrink-0">
-                  <Image
-                    src={listing.owner.avatar}
-                    alt={listing.owner.name}
-                    fill
-                    className="object-cover"
-                  />
+            {/* Posted by card */}
+            <div className="bg-white rounded-xl border border-slate-200 shadow-sm p-6">
+              <h3 className="font-semibold text-slate-900 mb-4">Listed by</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-11 h-11 rounded-full bg-teal-100 flex items-center justify-center shrink-0">
+                  <span className="text-lg font-bold text-teal-600">
+                    {listing.postedBy.name.charAt(0)}
+                  </span>
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-semibold text-gray-900">
-                      {listing.owner.name}
-                    </span>
-                    {listing.owner.verified && (
-                      <BadgeCheck className="w-4 h-4 text-indigo-500" />
+                    <span className="font-semibold text-slate-900">{listing.postedBy.name}</span>
+                    {listing.postedBy.verified && (
+                      <BadgeCheck className="w-4 h-4 text-teal-500" />
                     )}
                   </div>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    <Star className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                    <span className="text-sm font-medium text-gray-700">
-                      {listing.rating}
-                    </span>
-                    <span className="text-sm text-gray-400">
-                      ({listing.reviews} reviews)
-                    </span>
-                  </div>
+                  <div className="text-xs text-slate-500 capitalize">{listing.postedBy.type}</div>
                 </div>
               </div>
 
-              <div className="space-y-2 mb-5 text-sm text-gray-600">
+              <div className="space-y-2 text-sm text-slate-600 mb-5 pb-4 border-b border-slate-100">
+                <div className="flex justify-between">
+                  <span>Response time</span>
+                  <span className="font-medium text-slate-800">{listing.postedBy.responseTime}</span>
+                </div>
                 <div className="flex justify-between">
                   <span>Available from</span>
-                  <span className="font-medium text-gray-900">
-                    {new Date(listing.availableFrom).toLocaleDateString('en-GB', {
-                      day: 'numeric', month: 'short', year: 'numeric',
-                    })}
-                  </span>
+                  <span className="font-medium text-slate-800">{availableDate}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Monthly rent</span>
-                  <span className="font-medium text-gray-900">
-                    {symbol}{listing.price.toLocaleString()}
+                  <span>Rent</span>
+                  <span className="font-medium text-slate-800">
+                    {listing.rent.currency} {listing.rent.amount.toLocaleString()}/{listing.rent.period}
                   </span>
                 </div>
               </div>
 
-              <button className="w-full py-3 bg-indigo-600 text-white font-semibold rounded-xl hover:bg-indigo-700 transition-colors">
-                Contact Landlord
+              <button className="w-full py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors">
+                Message
               </button>
-              <button className="w-full mt-2 py-3 border border-indigo-200 text-indigo-600 font-semibold rounded-xl hover:bg-indigo-50 transition-colors">
-                Schedule Viewing
+              <button className="w-full mt-2 py-3 border border-teal-200 text-teal-700 font-semibold rounded-lg hover:bg-teal-50 transition-colors">
+                Save listing
               </button>
             </div>
 
-            {/* AI search hint */}
-            <div className="bg-indigo-50 border border-indigo-100 rounded-2xl p-4">
-              <p className="text-sm text-indigo-800 font-medium mb-1">
-                ✨ Looking for something similar?
-              </p>
-              <p className="text-xs text-indigo-600 mb-3">
-                Use AI search to describe exactly what you want.
-              </p>
+            {/* Quick links */}
+            <div className="bg-slate-50 border border-slate-200 rounded-xl p-4">
+              <p className="text-sm font-semibold text-slate-700 mb-2">Looking for something similar?</p>
               <Link
-                href="/listings"
-                className="block text-center py-2 bg-indigo-600 text-white text-sm font-semibold rounded-lg hover:bg-indigo-700 transition-colors"
+                href={`/listings?city=${encodeURIComponent(listing.location.city)}`}
+                className="block text-center py-2 bg-white border border-slate-200 text-slate-700 text-sm font-medium rounded-lg hover:border-teal-300 hover:text-teal-600 transition-colors"
               >
-                AI Search
+                More in {listing.location.city}
               </Link>
             </div>
           </div>
@@ -257,10 +320,10 @@ export default function ListingDetailPage({
       {similar.length > 0 && (
         <div className="mt-14">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-gray-900">Similar Properties</h2>
+            <h2 className="text-xl font-bold text-slate-900">Similar Listings</h2>
             <Link
               href="/listings"
-              className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-800"
+              className="flex items-center gap-1 text-sm text-teal-600 hover:text-teal-800 transition-colors"
             >
               View all <ChevronRight className="w-4 h-4" />
             </Link>
@@ -277,7 +340,7 @@ export default function ListingDetailPage({
       <div className="mt-10">
         <Link
           href="/listings"
-          className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 hover:text-teal-600 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to all listings
