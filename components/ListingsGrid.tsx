@@ -16,7 +16,7 @@ export default function ListingsGrid() {
       setLoading(true);
       try {
         const apiParams = new URLSearchParams();
-        const keys = ['city', 'type', 'minRent', 'maxRent', 'bedrooms', 'furnished', 'nationality', 'gender', 'petsAllowed', 'query'];
+        const keys = ['state', 'city', 'type', 'minRent', 'maxRent', 'bedrooms', 'furnished', 'nationality', 'gender', 'petsAllowed', 'query'];
         for (const k of keys) {
           const v = params.get(k);
           if (v) apiParams.set(k, v);

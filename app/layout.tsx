@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { AuthProvider } from '@/context/AuthContext';
 
 export const metadata: Metadata = {
@@ -15,11 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           <Header />
           <main className="flex-1">{children}</main>
-          <footer className="bg-white border-t border-slate-100 py-8 mt-16">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-sm text-slate-400">
-              <p>© 2025 FlatmateFind · Rooms &amp; share houses across Australia</p>
-            </div>
-          </footer>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

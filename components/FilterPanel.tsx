@@ -1,6 +1,6 @@
 'use client';
 import { SlidersHorizontal, X } from 'lucide-react';
-import { SearchFilters, CITIES, PROPERTY_TYPES, NATIONALITIES } from '@/lib/types';
+import { SearchFilters, AUSTRALIAN_STATES, PROPERTY_TYPES, NATIONALITIES } from '@/lib/types';
 
 interface FilterPanelProps {
   filters: SearchFilters;
@@ -65,22 +65,44 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
           </select>
         </div>
 
-        {/* City */}
+        {/* State */}
         <div className="mb-5">
           <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
-            City
+            State / Territory
           </label>
           <select
-            value={filters.city || ''}
-            onChange={(e) => update('city', e.target.value)}
+            value={filters.state || ''}
+            onChange={(e) => {
+              update('state', e.target.value);
+              update('city', undefined); // reset city when state changes
+            }}
             className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
           >
-            <option value="">All Cities</option>
-            {CITIES.map((c) => (
-              <option key={c} value={c}>{c}</option>
+            <option value="">All States</option>
+            {AUSTRALIAN_STATES.map((s) => (
+              <option key={s.abbr} value={s.abbr}>{s.abbr} — {s.name}</option>
             ))}
           </select>
         </div>
+
+        {/* City (shown when state is selected) */}
+        {filters.state && (
+          <div className="mb-5">
+            <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-2">
+              City
+            </label>
+            <select
+              value={filters.city || ''}
+              onChange={(e) => update('city', e.target.value)}
+              className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+            >
+              <option value="">All cities in {filters.state}</option>
+              {(AUSTRALIAN_STATES.find((s) => s.abbr === filters.state)?.cities ?? []).map((c) => (
+                <option key={c} value={c}>{c}</option>
+              ))}
+            </select>
+          </div>
+        )}
 
         {/* Property type */}
         <div className="mb-5">

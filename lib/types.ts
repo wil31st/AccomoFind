@@ -3,6 +3,7 @@ export interface Listing {
   title: string;
   type: 'private room' | 'whole apartment' | 'whole house' | 'studio' | 'shared room';
   location: {
+    state: string;
     city: string;
     suburb: string;
     postcode: string;
@@ -40,6 +41,7 @@ export interface Listing {
 }
 
 export interface SearchFilters {
+  state?: string;
   city?: string;
   type?: string;
   minRent?: number;
@@ -52,7 +54,27 @@ export interface SearchFilters {
   query?: string;
 }
 
-export const CITIES = ['Sydney', 'Melbourne', 'Brisbane', 'Perth', 'Adelaide', 'Gold Coast'];
+export interface AustralianState {
+  name: string;
+  abbr: string;
+  cities: string[];
+}
+
+export const AUSTRALIAN_STATES: AustralianState[] = [
+  { name: 'New South Wales',          abbr: 'NSW', cities: ['Sydney', 'Newcastle', 'Wollongong', 'Central Coast', 'Wagga Wagga'] },
+  { name: 'Victoria',                 abbr: 'VIC', cities: ['Melbourne', 'Geelong', 'Ballarat', 'Bendigo', 'Shepparton'] },
+  { name: 'Queensland',               abbr: 'QLD', cities: ['Brisbane', 'Gold Coast', 'Cairns', 'Sunshine Coast', 'Townsville', 'Toowoomba'] },
+  { name: 'Western Australia',        abbr: 'WA',  cities: ['Perth', 'Fremantle', 'Mandurah', 'Bunbury', 'Geraldton'] },
+  { name: 'South Australia',          abbr: 'SA',  cities: ['Adelaide', 'Mount Gambier', 'Whyalla', 'Port Augusta'] },
+  { name: 'Tasmania',                 abbr: 'TAS', cities: ['Hobart', 'Launceston', 'Devonport', 'Burnie'] },
+  { name: 'Australian Capital Territory', abbr: 'ACT', cities: ['Canberra'] },
+  { name: 'Northern Territory',       abbr: 'NT',  cities: ['Darwin', 'Alice Springs', 'Katherine'] },
+];
+
+export const STATES = AUSTRALIAN_STATES.map((s) => s.abbr);
+
+// Kept for backwards-compat (city filter in filter panel)
+export const CITIES = AUSTRALIAN_STATES.flatMap((s) => s.cities);
 
 export const PROPERTY_TYPES = ['private room', 'whole apartment', 'whole house', 'studio', 'shared room'] as const;
 

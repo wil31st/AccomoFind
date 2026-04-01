@@ -3,6 +3,7 @@ import { SearchFilters, Listing } from './types';
 
 export function filterListings(filters: SearchFilters): Listing[] {
   return listings.filter((listing) => {
+    if (filters.state && listing.location.state.toUpperCase() !== filters.state.toUpperCase()) return false;
     if (filters.city && listing.location.city.toLowerCase() !== filters.city.toLowerCase()) return false;
     if (filters.type && listing.type !== filters.type) return false;
     if (filters.minRent && listing.rent.amount < filters.minRent) return false;

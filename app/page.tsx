@@ -3,21 +3,23 @@ import { ArrowRight, Home, Search, MessageCircle } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import ListingCard from '@/components/ListingCard';
 import { FEATURED_LISTINGS, listings } from '@/data/listings';
-import { CITIES } from '@/lib/types';
+import { AUSTRALIAN_STATES } from '@/lib/types';
 
-const CITY_FLAGS: Record<string, string> = {
-  Sydney: '🇦🇺',
-  Melbourne: '🇦🇺',
-  London: '🇬🇧',
-  Dubai: '🇦🇪',
-  Singapore: '🇸🇬',
-  Toronto: '🇨🇦',
+const STATE_META: Record<string, { icon: string; color: string; highlight: string }> = {
+  NSW: { icon: '🌉', color: 'from-blue-500 to-blue-700',      highlight: 'Sydney & more' },
+  VIC: { icon: '🚊', color: 'from-purple-500 to-purple-700',  highlight: 'Melbourne & more' },
+  QLD: { icon: '☀️', color: 'from-amber-400 to-orange-600',  highlight: 'Brisbane, Gold Coast & more' },
+  WA:  { icon: '🦢', color: 'from-yellow-400 to-amber-600',  highlight: 'Perth & surrounds' },
+  SA:  { icon: '🍷', color: 'from-rose-500 to-rose-700',      highlight: 'Adelaide & Barossa' },
+  TAS: { icon: '⛵', color: 'from-sky-500 to-blue-700',       highlight: 'Hobart & Launceston' },
+  ACT: { icon: '🏛️', color: 'from-slate-500 to-slate-700',  highlight: 'Canberra' },
+  NT:  { icon: '🌴', color: 'from-green-500 to-emerald-700',  highlight: 'Darwin & Alice Springs' },
 };
 
 const stats = [
   { value: '500+', label: 'Listings' },
   { value: '50+', label: 'Suburbs' },
-  { value: '6', label: 'Cities' },
+  { value: '8', label: 'States & Territories' },
   { value: 'Free', label: 'To browse' },
 ];
 
@@ -108,27 +110,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Browse by city ────────────────────────────────────────────────── */}
+      {/* ── Browse by state ───────────────────────────────────────────────── */}
       <section className="bg-slate-50 border-t border-slate-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
           <div className="text-center mb-10">
-            <h2 className="text-2xl font-bold text-slate-900 mb-2">Browse by City</h2>
-            <p className="text-slate-500 text-sm">Find rooms and apartments in your destination</p>
+            <h2 className="text-2xl font-bold text-slate-900 mb-2">Browse by State</h2>
+            <p className="text-slate-500 text-sm">Find rooms and share houses across all states &amp; territories</p>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-            {CITIES.map((city) => {
-              const count = listings.filter((l) => l.location.city === city).length;
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {AUSTRALIAN_STATES.map((state) => {
+              const count = listings.filter((l) => l.location.state === state.abbr).length;
+              const meta = STATE_META[state.abbr] ?? { icon: '🏙️', color: 'from-slate-400 to-slate-600', highlight: 'Australia' };
               return (
                 <Link
-                  key={city}
-                  href={`/listings?city=${encodeURIComponent(city)}`}
-                  className="flex flex-col items-center gap-2 p-5 bg-white hover:bg-teal-50 border border-slate-200 hover:border-teal-300 rounded-xl transition-all group"
+                  key={state.abbr}
+                  href={`/listings?state=${encodeURIComponent(state.abbr)}`}
+                  className="group relative overflow-hidden rounded-2xl shadow-sm hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
                 >
-                  <span className="text-3xl">{CITY_FLAGS[city] ?? '🌏'}</span>
-                  <span className="font-semibold text-slate-900 group-hover:text-teal-700 text-sm">
-                    {city}
-                  </span>
-                  <span className="text-xs text-slate-400">{count} listing{count !== 1 ? 's' : ''}</span>
+                  {/* Gradient bg */}
+                  <div className={`absolute inset-0 bg-gradient-to-br ${meta.color} opacity-90 group-hover:opacity-100 transition-opacity`} />
+                  {/* Content */}
+                  <div className="relative flex flex-col items-start gap-1 px-5 py-5 text-white">
+                    <div className="flex items-center justify-between w-full mb-1">
+                      <span className="text-3xl leading-none drop-shadow-sm">{meta.icon}</span>
+                      <span className="text-xs font-bold bg-white/25 rounded-full px-2 py-0.5">
+                        {count > 0 ? `${count} listing${count !== 1 ? 's' : ''}` : 'Coming soon'}
+                      </span>
+                    </div>
+                    <span className="font-extrabold text-xl leading-tight drop-shadow-sm">{state.abbr}</span>
+                    <span className="text-xs text-white/80 leading-tight">{state.name}</span>
+                    <span className="text-[11px] text-white/65 mt-0.5">{meta.highlight}</span>
+                  </div>
                 </Link>
               );
             })}
@@ -158,28 +170,6 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── Footer ────────────────────────────────────────────────────────── */}
-      <footer className="bg-white border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <div className="flex items-center gap-2">
-              <div className="bg-teal-600 p-1.5 rounded-lg">
-                <Home className="w-4 h-4 text-white" />
-              </div>
-              <span className="font-bold text-slate-800">
-                Flatmate<span className="text-teal-600">Find</span>
-              </span>
-            </div>
-            <div className="flex items-center gap-6 text-sm text-slate-500">
-              <Link href="/listings" className="hover:text-teal-600 transition-colors">Browse Listings</Link>
-              <Link href="/post" className="hover:text-teal-600 transition-colors">Post a Listing</Link>
-            </div>
-            <p className="text-xs text-slate-400">
-              &copy; {new Date().getFullYear()} FlatmateFind &middot; Free to browse
-            </p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

@@ -5,6 +5,7 @@ import { SearchFilters } from '@/lib/types';
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const filters: SearchFilters = {
+    state: searchParams.get('state') || undefined,
     city: searchParams.get('city') || undefined,
     type: searchParams.get('type') || undefined,
     minRent: searchParams.get('minRent') ? Number(searchParams.get('minRent')) : undefined,

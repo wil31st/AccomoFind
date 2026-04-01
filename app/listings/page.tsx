@@ -12,6 +12,7 @@ function ListingsPageInner() {
   const params = useSearchParams();
 
   const filters: SearchFilters = {
+    state: params.get('state') || undefined,
     city: params.get('city') || undefined,
     type: params.get('type') || undefined,
     minRent: params.get('minRent') ? Number(params.get('minRent')) : undefined,
@@ -27,6 +28,7 @@ function ListingsPageInner() {
   const handleFilterChange = useCallback(
     (newFilters: SearchFilters) => {
       const next = new URLSearchParams();
+      if (newFilters.state) next.set('state', newFilters.state);
       if (newFilters.city) next.set('city', newFilters.city);
       if (newFilters.type) next.set('type', newFilters.type);
       if (newFilters.minRent) next.set('minRent', String(newFilters.minRent));
@@ -47,7 +49,7 @@ function ListingsPageInner() {
       {/* Page header */}
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-slate-900 mb-1">Browse Listings</h1>
-        <p className="text-slate-500 text-sm">Rooms, apartments and houses for rent across 6 cities</p>
+        <p className="text-slate-500 text-sm">Rooms, apartments and houses for rent across Australia</p>
       </div>
 
       {/* Search bar */}
