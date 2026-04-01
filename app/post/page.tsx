@@ -1,9 +1,10 @@
 'use client';
 import { useState, FormEvent } from 'react';
-import { CheckCircle } from 'lucide-react';
+import { CheckCircle, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 import { CITIES, PROPERTY_TYPES, INCLUSIONS_LIST, FACILITIES_LIST, NATIONALITIES } from '@/lib/types';
 import { usePostedListings } from '@/hooks/usePostedListings';
+import { checkSpam, isValidAUPostcode, checkRateLimit } from '@/lib/spamGuard';
 
 interface FormData {
   type: string;
@@ -68,6 +69,8 @@ export default function PostListingPage() {
   const [form, setForm] = useState<FormData>(initialForm);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const [blockError, setBlockError] = useState('');
+  const [spamWarnings, setSpamWarnings] = useState<string[]>([]);
   const { add } = usePostedListings();
 
   function set(key: keyof FormData, value: FormData[keyof FormData]) {
@@ -88,12 +91,19 @@ export default function PostListingPage() {
     if (!form.bathrooms) errs.bathrooms = 'Required';
     if (!form.city) errs.city = 'Required';
     if (!form.suburb) errs.suburb = 'Required';
-    if (!form.postcode) errs.postcode = 'Required';
     if (!form.address) errs.address = 'Required';
+    if (!form.postcode) {
+      errs.postcode = 'Required';
+    } else if (!isValidAUPostcode(form.postcode)) {
+      errs.postcode = 'Enter a valid 4-digit Australian postcode (e.g. 2042)';
+    }
     if (!form.rentAmount) errs.rentAmount = 'Required';
+    if (form.rentAmount && Number(form.rentAmount) < 50) errs.rentAmount = 'Rent must be at least $50/week';
     if (!form.totalCapacity) errs.totalCapacity = 'Required';
     if (!form.availableFrom) errs.availableFrom = 'Required';
-    if (!form.description || form.description.trim().length < 20) errs.description = 'Please write at least 20 characters';
+    if (!form.description || form.description.trim().length < 100) {
+      errs.description = `Please write at least 100 characters (${form.description.trim().length}/100)`;
+    }
     if (!form.contactName) errs.contactName = 'Required';
     if (!form.contactEmail) errs.contactEmail = 'Required';
     if (form.contactEmail && !form.contactEmail.includes('@')) errs.contactEmail = 'Invalid email';
@@ -103,6 +113,25 @@ export default function PostListingPage() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    setBlockError('');
+    setSpamWarnings([]);
+
+    // ── Rate limit check ──────────────────────────────────────────────────
+    const rateCheck = checkRateLimit();
+    if (rateCheck.blocked) {
+      setBlockError(rateCheck.reason!);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
+    // ── Spam / fraud content check ────────────────────────────────────────
+    const spamCheck = checkSpam(`${form.description} ${form.contactPhone}`);
+    if (spamCheck.flagged) {
+      setSpamWarnings(spamCheck.reasons);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      return;
+    }
+
     if (!validate()) return;
     // Save to localStorage for dashboard
     add({
@@ -155,6 +184,35 @@ export default function PostListingPage() {
         <h1 className="text-2xl font-bold text-slate-900 mb-1">Post a Listing</h1>
         <p className="text-slate-500 text-sm">Fill in your property details to reach thousands of potential tenants.</p>
       </div>
+
+      {/* Rate limit / block error */}
+      {blockError && (
+        <div className="flex items-start gap-3 bg-red-50 border border-red-200 rounded-xl px-5 py-4 mb-6">
+          <AlertTriangle className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-red-700 text-sm mb-0.5">Posting limit reached</p>
+            <p className="text-red-600 text-sm">{blockError}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Spam / fraud warnings */}
+      {spamWarnings.length > 0 && (
+        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-4 mb-6">
+          <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
+          <div>
+            <p className="font-semibold text-amber-800 text-sm mb-1">Your listing was flagged for review</p>
+            <ul className="list-disc pl-4 space-y-0.5">
+              {spamWarnings.map((w) => (
+                <li key={w} className="text-amber-700 text-sm">{w}</li>
+              ))}
+            </ul>
+            <p className="text-amber-600 text-xs mt-2">
+              Please revise your listing to remove any suspicious content. Fraudulent listings are removed and accounts are banned.
+            </p>
+          </div>
+        </div>
+      )}
 
       <form onSubmit={handleSubmit} noValidate>
         {/* 1. Property Details */}
@@ -347,8 +405,12 @@ export default function PostListingPage() {
               className={`${inputClass} resize-none`}
             />
             <div className="flex justify-between mt-1">
-              {errors.description ? <p className="text-red-500 text-xs">{errors.description}</p> : <span />}
-              <span className="text-xs text-slate-400">{form.description.length} characters</span>
+              {errors.description
+                ? <p className="text-red-500 text-xs">{errors.description}</p>
+                : <p className="text-xs text-slate-400">Minimum 100 characters required</p>}
+              <span className={`text-xs font-medium ${form.description.trim().length >= 100 ? 'text-green-600' : 'text-slate-400'}`}>
+                {form.description.trim().length}/100
+              </span>
             </div>
           </div>
         </Section>

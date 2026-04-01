@@ -1,10 +1,13 @@
 'use client';
 import { useState } from 'react';
-import { Heart, MessageCircle, BadgeCheck, Star } from 'lucide-react';
+import { Heart, MessageCircle, BadgeCheck, Star, Flag } from 'lucide-react';
 import Link from 'next/link';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useShortlist } from '@/hooks/useShortlist';
+import { useAuth } from '@/context/AuthContext';
 import ChatModal from '@/components/ChatModal';
+import AuthPromptModal from '@/components/AuthPromptModal';
+import ReportListingModal from '@/components/ReportListingModal';
 import { Listing } from '@/lib/types';
 
 interface ListingDetailActionsProps {
@@ -13,9 +16,17 @@ interface ListingDetailActionsProps {
 }
 
 export default function ListingDetailActions({ listing, availableDate }: ListingDetailActionsProps) {
+  const { user } = useAuth();
   const { isFavorited, toggle: toggleFavorite } = useFavorites();
   const { isShortlisted } = useShortlist();
   const [chatOpen, setChatOpen] = useState(false);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const [reportOpen, setReportOpen] = useState(false);
+
+  function handleSave() {
+    if (!user) { setShowAuthPrompt(true); return; }
+    toggleFavorite(listing.id);
+  }
 
   const favorited = isFavorited(listing.id);
   const shortlisted = isShortlisted(listing.id);
@@ -77,7 +88,7 @@ export default function ListingDetailActions({ listing, availableDate }: Listing
           </button>
 
           <button
-            onClick={() => toggleFavorite(listing.id)}
+            onClick={handleSave}
             className={`w-full flex items-center justify-center gap-2 mt-2 py-3 border font-semibold rounded-lg transition-all ${
               favorited
                 ? 'bg-rose-50 border-rose-300 text-rose-600 hover:bg-rose-100'
@@ -99,10 +110,21 @@ export default function ListingDetailActions({ listing, availableDate }: Listing
             More in {listing.location.city}
           </Link>
         </div>
+
+        {/* Report listing */}
+        <button
+          onClick={() => setReportOpen(true)}
+          className="flex items-center gap-1.5 text-xs text-slate-400 hover:text-red-500 transition-colors mx-auto"
+        >
+          <Flag className="w-3.5 h-3.5" />
+          Report this listing
+        </button>
       </div>
 
       {/* Chat Modal */}
       {chatOpen && <ChatModal listing={listing} onClose={() => setChatOpen(false)} />}
+      {showAuthPrompt && <AuthPromptModal onClose={() => setShowAuthPrompt(false)} returnTo={`/listings/${listing.id}`} />}
+      {reportOpen && <ReportListingModal listingId={listing.id} listingTitle={listing.title} onClose={() => setReportOpen(false)} />}
     </>
   );
 }
