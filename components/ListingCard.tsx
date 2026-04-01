@@ -1,9 +1,12 @@
 'use client';
+import { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Bed, Bath, Users, BadgeCheck, Heart } from 'lucide-react';
 import { Listing } from '@/lib/types';
 import { useFavorites } from '@/hooks/useFavorites';
+import { useAuth } from '@/context/AuthContext';
+import AuthPromptModal from '@/components/AuthPromptModal';
 import clsx from 'clsx';
 
 interface ListingCardProps {
@@ -19,11 +22,30 @@ const TYPE_COLORS: Record<string, string> = {
 };
 
 export default function ListingCard({ listing }: ListingCardProps) {
+  const { user } = useAuth();
   const { isFavorited, toggle: toggleFavorite } = useFavorites();
   const favorited = isFavorited(listing.id);
   const periodLabel = listing.rent.period === 'week' ? 'pw' : 'pm';
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+
+  function handleHeartClick(e: React.MouseEvent) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) {
+      setShowAuthPrompt(true);
+    } else {
+      toggleFavorite(listing.id);
+    }
+  }
 
   return (
+    <>
+    {showAuthPrompt && (
+      <AuthPromptModal
+        onClose={() => setShowAuthPrompt(false)}
+        returnTo={`/listings/${listing.id}`}
+      />
+    )}
     <div className="group bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md border border-slate-200 transition-all duration-200 hover:-translate-y-0.5">
       {/* Image */}
       <Link href={`/listings/${listing.id}`} className="block relative h-48 overflow-hidden">
@@ -47,7 +69,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
         {/* Heart / Save button — top right */}
         <button
-          onClick={(e) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(listing.id); }}
+          onClick={handleHeartClick}
           className={clsx(
             'absolute top-3 right-3 p-2 rounded-full shadow-md transition-all',
             favorited
@@ -131,5 +153,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
         </div>
       </Link>
     </div>
+    </>
   );
 }
