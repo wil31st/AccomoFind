@@ -7,7 +7,7 @@ const footerLinks = {
     links: [
       { label: 'Browse Listings', href: '/listings' },
       { label: 'Create Profile', href: '/profile' },
-      { label: 'Safety Tips', href: '/faq#renter' },
+      { label: 'Safety Tips', href: '/safety-tips' },
     ],
   },
   subletters: {
