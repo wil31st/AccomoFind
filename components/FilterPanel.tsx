@@ -176,7 +176,6 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
             <option value="">Any</option>
             <option value="furnished">Furnished</option>
             <option value="unfurnished">Unfurnished</option>
-            <option value="partially furnished">Partially furnished</option>
           </select>
         </div>
 

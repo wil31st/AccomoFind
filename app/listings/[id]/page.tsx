@@ -209,7 +209,6 @@ export default function ListingDetailPage({ params }: { params: { id: string } }
           <div className="flex items-center gap-2 mb-8">
             <span className={clsx('px-3 py-1.5 rounded-full text-sm font-semibold',
               listing.furnished === 'furnished' ? 'bg-teal-100 text-teal-800' :
-              listing.furnished === 'partially furnished' ? 'bg-amber-100 text-amber-800' :
               'bg-slate-100 text-slate-700'
             )}>
               {listing.furnished.charAt(0).toUpperCase() + listing.furnished.slice(1)}

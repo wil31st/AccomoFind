@@ -86,7 +86,7 @@ export const listings: Listing[] = [
     bathrooms: 1,
     currentOccupants: 1,
     totalCapacity: 2,
-    furnished: 'partially furnished',
+    furnished: 'furnished',
     facilities: ['Air conditioning', 'Washing machine'],
     preferredNationality: ['Australian', 'British', 'Irish'],
     preferredGender: 'female',

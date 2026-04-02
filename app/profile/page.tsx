@@ -5,6 +5,7 @@ import {
   Camera, Save, Trash2, CheckCircle, MapPin, DollarSign,
   Calendar, Home, User, Sparkles, Zap, Home as HomeIcon, ArrowLeftRight,
 } from 'lucide-react';
+import AuthPromptModal from '@/components/AuthPromptModal';
 import { useAuth } from '@/context/AuthContext';
 import { useRenterProfile } from '@/hooks/useRenterProfile';
 import {
@@ -47,6 +48,7 @@ export default function ProfilePage() {
   const { profile, loaded, save, clear } = useRenterProfile();
   const fileRef = useRef<HTMLInputElement>(null);
   const [saved, setSaved] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Form state
   const [photo, setPhoto] = useState<string | null>(null);
@@ -68,9 +70,8 @@ export default function ProfilePage() {
   const [petsOk, setPetsOk] = useState(false);
   const [smokingOk, setSmokingOk] = useState(false);
 
-  // Redirect if not a renter
+  // Redirect only if wrong role (subletter shouldn't use renter profile)
   useEffect(() => {
-    if (!loading && !user) router.push('/auth/signin?from=/profile');
     if (!loading && user && user.role !== 'renter') router.push('/dashboard');
   }, [loading, user, router]);
 
@@ -122,6 +123,10 @@ export default function ProfilePage() {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault();
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
     save({
       photo,
       age: age ? Number(age) : null,
@@ -159,6 +164,16 @@ export default function ProfilePage() {
     .flatMap((s) => s.cities);
 
   return (
+    <>
+    {showAuthModal && (
+      <AuthPromptModal
+        onClose={() => setShowAuthModal(false)}
+        returnTo="/profile"
+        icon={<User className="w-7 h-7 text-teal-600" />}
+        title="Create an account to save your profile"
+        message="Sign up for free so subletters can find you, and your profile is saved to your dashboard."
+      />
+    )}
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Header */}
       <div className="flex items-center gap-3 mb-8">
@@ -557,5 +572,6 @@ export default function ProfilePage() {
         </div>
       </form>
     </div>
+    </>
   );
 }

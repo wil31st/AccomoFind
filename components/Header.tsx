@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Heart, LayoutDashboard, LogOut, User, ChevronDown, Users, Sparkles, Briefcase } from 'lucide-react';
+import { Home, Heart, LayoutDashboard, LogOut, User, ChevronDown, Users, Sparkles, Briefcase, Search, LogIn, UserPlus } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useFavorites } from '@/hooks/useFavorites';
@@ -14,7 +14,6 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     function handle(e: MouseEvent) {
       if (menuRef.current && !menuRef.current.contains(e.target as Node)) {
@@ -46,95 +45,46 @@ export default function Header() {
           </Link>
 
           {/* Nav */}
-          <nav className="flex items-center gap-4">
+          <nav className="flex items-center gap-1">
+            {/* Browse */}
             <Link
               href="/listings"
-              className={`text-sm font-medium transition-colors ${
-                pathname.startsWith('/listings') ? 'text-teal-600' : 'text-slate-600 hover:text-teal-600'
+              className={`flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
+                pathname.startsWith('/listings') ? 'text-teal-600 bg-teal-50' : 'text-slate-600 hover:text-teal-600 hover:bg-slate-50'
               }`}
             >
-              Browse Listings
+              <Search className="w-4 h-4" />
+              Browse
             </Link>
+
+            {/* Jobs with New badge */}
             <Link
               href="/jobs"
-              className={`hidden sm:flex items-center gap-1 text-sm font-medium transition-colors ${
-                pathname.startsWith('/jobs') ? 'text-teal-600' : 'text-slate-600 hover:text-teal-600'
+              className={`relative flex items-center gap-1.5 text-sm font-medium px-3 py-2 rounded-lg transition-colors ${
+                pathname.startsWith('/jobs') ? 'text-teal-600 bg-teal-50' : 'text-slate-600 hover:text-teal-600 hover:bg-slate-50'
               }`}
             >
-              <Briefcase className="w-3.5 h-3.5" />
+              <Briefcase className="w-4 h-4" />
               Jobs
+              <span className="absolute -top-1 -right-1 bg-rose-500 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full leading-none">
+                NEW
+              </span>
             </Link>
-
-            {/* Show role-specific nav only when signed in */}
-            {!loading && user && (
-              <>
-                {user.role === 'renter' && (
-                  <>
-                    <Link
-                      href="/favorites"
-                      className={`relative flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                        pathname === '/favorites' ? 'text-rose-500' : 'text-slate-600 hover:text-rose-500'
-                      }`}
-                    >
-                      <Heart className={`w-4 h-4 ${pathname === '/favorites' ? 'fill-current' : ''}`} />
-                      Saved
-                      {favorites.length > 0 && (
-                        <span className="absolute -top-1.5 -right-2 bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
-                          {favorites.length}
-                        </span>
-                      )}
-                    </Link>
-                    <Link
-                      href="/profile"
-                      className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                        pathname === '/profile' ? 'text-teal-600' : 'text-slate-600 hover:text-teal-600'
-                      }`}
-                    >
-                      <Sparkles className="w-4 h-4" />
-                      My Profile
-                    </Link>
-                  </>
-                )}
-
-                {user.role === 'subletter' && (
-                  <Link
-                    href="/renters"
-                    className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                      pathname === '/renters' ? 'text-amber-600' : 'text-slate-600 hover:text-amber-600'
-                    }`}
-                  >
-                    <Users className="w-4 h-4" />
-                    Find Renters
-                  </Link>
-                )}
-
-                <Link
-                  href="/dashboard"
-                  className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-                    pathname === '/dashboard' ? 'text-teal-600' : 'text-slate-600 hover:text-teal-600'
-                  }`}
-                >
-                  <LayoutDashboard className="w-4 h-4" />
-                  Dashboard
-                </Link>
-              </>
-            )}
 
             {/* Post a Listing — subletter only */}
             {!loading && user?.role === 'subletter' && (
               <Link
                 href="/post"
-                className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
+                className="ml-1 bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
               >
                 + Post a Listing
               </Link>
             )}
 
-            {/* Auth buttons / user menu */}
+            {/* Auth / user menu */}
             {!loading && (
               user ? (
-                /* User avatar dropdown */
-                <div className="relative" ref={menuRef}>
+                <div className="relative ml-1" ref={menuRef}>
                   <button
                     onClick={() => setMenuOpen((v) => !v)}
                     className="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full border border-slate-200 hover:border-teal-300 transition-colors"
@@ -152,29 +102,22 @@ export default function Header() {
                         <p className="text-sm font-semibold text-slate-900 truncate">{user.name}</p>
                         <p className="text-xs text-slate-500 capitalize">{user.role}</p>
                       </div>
-                      <Link
-                        href="/dashboard"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                      >
+                      <Link href="/dashboard" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                         <LayoutDashboard className="w-4 h-4 text-slate-400" />
                         Dashboard
                       </Link>
                       {user.role === 'renter' && (
                         <>
-                          <Link
-                            href="/favorites"
-                            onClick={() => setMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
+                          <Link href="/favorites" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                             <Heart className="w-4 h-4 text-slate-400" />
                             Saved Listings
+                            {favorites.length > 0 && (
+                              <span className="ml-auto bg-rose-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+                                {favorites.length}
+                              </span>
+                            )}
                           </Link>
-                          <Link
-                            href="/profile"
-                            onClick={() => setMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
+                          <Link href="/profile" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                             <Sparkles className="w-4 h-4 text-slate-400" />
                             My Profile
                           </Link>
@@ -182,29 +125,18 @@ export default function Header() {
                       )}
                       {user.role === 'subletter' && (
                         <>
-                          <Link
-                            href="/renters"
-                            onClick={() => setMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
+                          <Link href="/renters" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                             <Users className="w-4 h-4 text-slate-400" />
                             Find Renters
                           </Link>
-                          <Link
-                            href="/post"
-                            onClick={() => setMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors"
-                          >
+                          <Link href="/post" onClick={() => setMenuOpen(false)} className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
                             <User className="w-4 h-4 text-slate-400" />
                             Post a Listing
                           </Link>
                         </>
                       )}
                       <div className="border-t border-slate-100 mt-1">
-                        <button
-                          onClick={handleSignOut}
-                          className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors"
-                        >
+                        <button onClick={handleSignOut} className="flex items-center gap-2.5 w-full px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors">
                           <LogOut className="w-4 h-4" />
                           Sign Out
                         </button>
@@ -213,19 +145,12 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                /* Sign in / Sign up */
-                <div className="flex items-center gap-2">
-                  <Link
-                    href="/auth/signin"
-                    className="text-sm font-medium text-slate-600 hover:text-teal-600 transition-colors px-3 py-2"
-                  >
-                    Sign In
+                <div className="flex items-center gap-1.5 ml-1">
+                  <Link href="/auth/signin" title="Sign In" className="flex items-center justify-center w-9 h-9 rounded-lg text-slate-600 hover:text-teal-600 hover:bg-slate-50 transition-colors">
+                    <LogIn className="w-5 h-5" />
                   </Link>
-                  <Link
-                    href="/auth/signup"
-                    className="bg-teal-600 hover:bg-teal-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition-colors"
-                  >
-                    Sign Up
+                  <Link href="/auth/signup" title="Sign Up" className="flex items-center justify-center w-9 h-9 rounded-lg bg-teal-600 hover:bg-teal-700 text-white transition-colors">
+                    <UserPlus className="w-5 h-5" />
                   </Link>
                 </div>
               )

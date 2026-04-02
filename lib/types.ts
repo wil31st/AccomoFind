@@ -24,7 +24,7 @@ export interface Listing {
   bathrooms: number;
   currentOccupants: number;
   totalCapacity: number;
-  furnished: 'furnished' | 'unfurnished' | 'partially furnished';
+  furnished: 'furnished' | 'unfurnished';
   facilities: string[];
   roomFeatures?: string[];
   roomCategories?: string[];

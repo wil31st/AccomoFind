@@ -86,11 +86,10 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28">
           <div className="text-center max-w-3xl mx-auto">
             <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight mb-4">
-              Find Your Perfect Flatmate &amp; Home
+              Your Next Room is Here
             </h1>
             <p className="text-lg sm:text-xl text-teal-100 mb-10 max-w-2xl mx-auto">
-              Browse thousands of rooms, apartments and houses for rent. Filter by inclusions,
-              nationality preferences and more.
+              Free to browse. No fees. Message hosts directly.
             </p>
             <div className="max-w-2xl mx-auto">
               <SearchBar size="lg" placeholder="Search by suburb, city, or keyword..." />

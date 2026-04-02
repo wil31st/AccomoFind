@@ -1,6 +1,8 @@
 'use client';
 import { useState, FormEvent } from 'react';
-import { CheckCircle, AlertTriangle, Zap, Home as HomeIcon, ArrowLeftRight, ShoppingCart, Train, Bus, GraduationCap, School, Hospital, Dumbbell, Trees, ShoppingBag, Pill, Coffee, Plane, Umbrella, MapPinned, type LucideIcon } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Zap, Home as HomeIcon, ArrowLeftRight, ShoppingCart, Train, Bus, GraduationCap, School, Hospital, Dumbbell, Trees, ShoppingBag, Pill, Coffee, Plane, Umbrella, MapPinned, PlusCircle, type LucideIcon } from 'lucide-react';
+import { useAuth } from '@/context/AuthContext';
+import AuthPromptModal from '@/components/AuthPromptModal';
 
 const NEARBY_ICONS: Record<string, LucideIcon> = {
   'Supermarket':        ShoppingCart,
@@ -87,6 +89,7 @@ const inputClass = 'w-full text-sm border border-slate-200 rounded-lg py-2.5 px-
 const selectClass = 'w-full text-sm border border-slate-200 rounded-lg py-2.5 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white';
 
 export default function PostListingPage() {
+  const { user } = useAuth();
   const [form, setForm] = useState<FormData>(initialForm);
   const [submitted, setSubmitted] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -96,8 +99,8 @@ export default function PostListingPage() {
   const [customFacilities, setCustomFacilities] = useState<string[]>([]);
   const [customRoomFeatures, setCustomRoomFeatures] = useState<string[]>([]);
   const [rules, setRules] = useState<string[]>([]);
-  // nearbyDistances: type → distance string (empty = not included)
   const [nearbyDistances, setNearbyDistances] = useState<Record<string, string>>({});
+  const [showAuthModal, setShowAuthModal] = useState(false);
   const { add } = usePostedListings();
 
   function set(key: keyof FormData, value: FormData[keyof FormData]) {
@@ -142,6 +145,11 @@ export default function PostListingPage() {
     e.preventDefault();
     setBlockError('');
     setSpamWarnings([]);
+
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
 
     // ── Rate limit check ──────────────────────────────────────────────────
     const rateCheck = checkRateLimit();
@@ -215,6 +223,16 @@ export default function PostListingPage() {
   }
 
   return (
+    <>
+    {showAuthModal && (
+      <AuthPromptModal
+        onClose={() => setShowAuthModal(false)}
+        returnTo="/post"
+        icon={<PlusCircle className="w-7 h-7 text-teal-600" />}
+        title="Create an account to post"
+        message="You're almost there! Sign up for free to publish your listing and start receiving enquiries."
+      />
+    )}
     <div className="max-w-3xl mx-auto px-4 sm:px-6 py-8">
       <div className="mb-7">
         <h1 className="text-2xl font-bold text-slate-900 mb-1">Post a Listing</h1>
@@ -289,7 +307,6 @@ export default function PostListingPage() {
                 <option value="">Select...</option>
                 <option value="furnished">Furnished</option>
                 <option value="unfurnished">Unfurnished</option>
-                <option value="partially furnished">Partially furnished</option>
               </select>
               {errors.furnished && <p className="text-red-500 text-xs mt-1">{errors.furnished}</p>}
             </div>
@@ -649,6 +666,7 @@ export default function PostListingPage() {
         </div>
       </form>
     </div>
+    </>
   );
 }
 

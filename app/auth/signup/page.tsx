@@ -24,7 +24,13 @@ export default function SignUpPage() {
     if (password.length < 6) { setError('Password must be at least 6 characters.'); return; }
     const result = signUp(name.trim(), email.trim(), password, role);
     if (result.success) {
-      router.push('/dashboard');
+      // Fire-and-forget: send verification email
+      fetch('/api/auth/send-verification', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.trim(), name: name.trim() }),
+      });
+      router.push('/auth/verify-email');
     } else {
       setError(result.error ?? 'Sign up failed.');
     }

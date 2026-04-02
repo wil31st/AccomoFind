@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { CheckCircle, AlertTriangle, Briefcase } from 'lucide-react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import AuthPromptModal from '@/components/AuthPromptModal';
 import { useJobListings } from '@/hooks/useJobListings';
 import { checkSpam } from '@/lib/spamGuard';
 import { AUSTRALIAN_STATES } from '@/lib/types';
@@ -22,6 +23,7 @@ export default function PostJobPage() {
   const [spamWarnings, setSpamWarnings] = useState<string[]>([]);
   const [blockError, setBlockError] = useState('');
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [showAuthModal, setShowAuthModal] = useState(false);
 
   // Form state
   const [title, setTitle] = useState('');
@@ -33,9 +35,7 @@ export default function PostJobPage() {
   const [description, setDescription] = useState('');
   const [contactEmail, setContactEmail] = useState('');
 
-  useEffect(() => {
-    if (!loading && !user) router.push('/auth/signin?from=/jobs/post');
-  }, [loading, user, router]);
+  // No redirect — unauthenticated users can fill the form, gated on submit
 
   // Pre-fill email from user account
   useEffect(() => {
@@ -61,9 +61,14 @@ export default function PostJobPage() {
     setBlockError('');
     setSpamWarnings([]);
 
+    if (!user) {
+      setShowAuthModal(true);
+      return;
+    }
+
     // Rate limit: max 2 active jobs per user
     const active = userJobs.filter(
-      (j) => j.status === 'active' && j.id.startsWith(`job-${user!.id}`)
+      (j) => j.status === 'active' && j.id.startsWith(`job-${user.id}`)
     ).length;
     if (active >= 2) {
       setBlockError('You already have 2 active job posts. Close an existing one before posting another.');
@@ -82,7 +87,7 @@ export default function PostJobPage() {
     if (!validate()) return;
 
     add({
-      id: `job-${user!.id}-${Date.now()}`,
+      id: `job-${user.id}-${Date.now()}`,
       title: title.trim(),
       company: company.trim() || undefined,
       type: type as JobType,
@@ -91,8 +96,8 @@ export default function PostJobPage() {
       salary: salary.trim() || undefined,
       description: description.trim(),
       contactEmail: contactEmail.trim(),
-      postedByName: user!.name,
-      postedByRole: user!.role,
+      postedByName: user.name,
+      postedByRole: user.role,
       postedAt: new Date().toISOString(),
       status: 'active',
     });
@@ -118,6 +123,16 @@ export default function PostJobPage() {
   }
 
   return (
+    <>
+    {showAuthModal && (
+      <AuthPromptModal
+        onClose={() => setShowAuthModal(false)}
+        returnTo="/jobs/post"
+        icon={<Briefcase className="w-7 h-7 text-teal-600" />}
+        title="Sign up to post a job"
+        message="Create a free account to publish your job listing and start receiving applications."
+      />
+    )}
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8">
       <div className="flex items-center gap-3 mb-6">
         <Briefcase className="w-6 h-6 text-teal-600" />
@@ -228,5 +243,6 @@ export default function PostJobPage() {
         </button>
       </form>
     </div>
+    </>
   );
 }

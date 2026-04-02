@@ -6,6 +6,7 @@ export interface User {
   name: string;
   email: string;
   role: 'renter' | 'subletter';
+  emailVerified: boolean;
 }
 
 interface StoredUser extends User {
@@ -18,6 +19,7 @@ interface AuthContextType {
   signIn: (email: string, password: string) => { success: boolean; error?: string };
   signUp: (name: string, email: string, password: string, role: 'renter' | 'subletter') => { success: boolean; error?: string };
   signOut: () => void;
+  markEmailVerified: (email: string) => void;
 }
 
 const AuthContext = createContext<AuthContextType | null>(null);
@@ -57,12 +59,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (users.find((u) => u.email.toLowerCase() === email.toLowerCase())) {
       return { success: false, error: 'An account with this email already exists.' };
     }
-    const newUser: StoredUser = { id: `user-${Date.now()}`, name, email, password, role };
+    const newUser: StoredUser = { id: `user-${Date.now()}`, name, email, password, role, emailVerified: false };
     localStorage.setItem(USERS_KEY, JSON.stringify([...users, newUser]));
     const { password: _pw, ...sessionUser } = newUser;
     setUser(sessionUser);
     localStorage.setItem(SESSION_KEY, JSON.stringify(sessionUser));
     return { success: true };
+  }
+
+  function markEmailVerified(email: string) {
+    const users = getUsers();
+    const updated = users.map((u) =>
+      u.email.toLowerCase() === email.toLowerCase() ? { ...u, emailVerified: true } : u
+    );
+    localStorage.setItem(USERS_KEY, JSON.stringify(updated));
+    setUser((prev) => {
+      if (!prev) return prev;
+      const next = { ...prev, emailVerified: true };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(next));
+      return next;
+    });
   }
 
   function signOut() {
@@ -71,7 +87,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, loading, signIn, signUp, signOut, markEmailVerified }}>
       {children}
     </AuthContext.Provider>
   );

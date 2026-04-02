@@ -16,11 +16,11 @@ interface ListingCardProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  'private room': 'bg-teal-600 text-white',
-  'whole apartment': 'bg-blue-600 text-white',
-  'whole house': 'bg-emerald-600 text-white',
-  'studio': 'bg-violet-600 text-white',
-  'shared room': 'bg-orange-500 text-white',
+  'private room': 'bg-teal-500 text-white',
+  'whole apartment': 'bg-indigo-500 text-white',
+  'whole house': 'bg-emerald-500 text-white',
+  'studio': 'bg-violet-500 text-white',
+  'shared room': 'bg-rose-500 text-white',
 };
 
 export default function ListingCard({ listing }: ListingCardProps) {
@@ -205,7 +205,6 @@ export default function ListingCard({ listing }: ListingCardProps) {
             <span className={clsx(
               'px-2 py-0.5 rounded-full text-xs font-medium',
               listing.furnished === 'furnished' ? 'bg-teal-50 text-teal-700' :
-              listing.furnished === 'partially furnished' ? 'bg-amber-50 text-amber-700' :
               'bg-slate-100 text-slate-600'
             )}>
               {listing.furnished}
