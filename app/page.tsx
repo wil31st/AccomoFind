@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ArrowRight, Home, Search, MessageCircle } from 'lucide-react';
+import { ArrowRight, DollarSign, ShieldCheck, Users, MessageCircle, Zap, Globe, SlidersHorizontal, Briefcase, Heart } from 'lucide-react';
 import SearchBar from '@/components/SearchBar';
 import ListingCard from '@/components/ListingCard';
 import AdSlot from '@/components/AdSlot';
@@ -21,24 +21,60 @@ const STATE_META: Record<string, { highlight: string }> = {
 };
 
 
-const steps = [
+const WHY_BENEFITS = [
   {
-    icon: Home,
-    step: '1',
-    title: 'Post your listing',
-    description: 'Fill in your property details, preferred tenants and availability in minutes.',
+    icon: DollarSign,
+    color: 'bg-emerald-50 text-emerald-600',
+    title: '100% Free — No Hidden Fees',
+    description: 'Browse, apply, and message landlords at zero cost. No subscription, no booking fee, no "premium unlock". Unlike other platforms that charge renters to see contact details.',
   },
   {
-    icon: Search,
-    step: '2',
-    title: 'Browse & filter',
-    description: 'Search by city, budget, inclusions, nationality preference and more.',
+    icon: SlidersHorizontal,
+    color: 'bg-blue-50 text-blue-600',
+    title: 'Filters That Actually Matter',
+    description: 'Filter by nationality preference, gender, pets, bills included, stay type (short vs long term), and availability date — not just price and location.',
+  },
+  {
+    icon: Users,
+    color: 'bg-violet-50 text-violet-600',
+    title: 'Built for Share-House Living',
+    description: 'Find rooms in existing share houses where the vibe matters as much as the rent. See who already lives there, their lifestyle, and whether you are a match.',
   },
   {
     icon: MessageCircle,
-    step: '3',
-    title: 'Contact & move in',
-    description: 'Message the owner or current tenant directly and arrange your move.',
+    color: 'bg-teal-50 text-teal-600',
+    title: 'Direct Contact With the Host',
+    description: 'Message the current tenant or owner directly — no middleman, no delayed responses through a portal. Fast, personal, and honest communication from day one.',
+  },
+  {
+    icon: Zap,
+    color: 'bg-amber-50 text-amber-600',
+    title: 'Short-Term & Sublet Friendly',
+    description: 'Moving to Australia for a few weeks, between leases, or on a working holiday? FlatmateFind is one of the few boards that actively supports short-term and subletting arrangements.',
+  },
+  {
+    icon: Globe,
+    color: 'bg-sky-50 text-sky-600',
+    title: 'A Community That Speaks Your Language',
+    description: 'Listings welcome people from all backgrounds. Browse Facebook groups by state and connect with fellow renters from your community before you even sign a lease.',
+  },
+  {
+    icon: Briefcase,
+    color: 'bg-orange-50 text-orange-600',
+    title: 'Jobs Board Included',
+    description: "Need work as well as a room? The built-in jobs board connects renters with casual, part-time and full-time roles in their area — a complete settlement toolkit in one place.",
+  },
+  {
+    icon: ShieldCheck,
+    color: 'bg-rose-50 text-rose-600',
+    title: 'Safer Listings, Less Spam',
+    description: 'Built-in rate limiting, spam detection and a community report button keep the board clean. You see genuine listings — not scam posts or duplicates clogging up your search.',
+  },
+  {
+    icon: Heart,
+    color: 'bg-pink-50 text-pink-600',
+    title: 'Save, Compare & Shortlist',
+    description: 'Heart your favourite rooms, compare up to three listings side by side, and build a shortlist of promising renters — all without creating a paid account.',
   },
 ];
 
@@ -142,25 +178,34 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ── How it works ──────────────────────────────────────────────────── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-slate-900 mb-2">How It Works</h2>
-          <p className="text-slate-500 text-sm">Three simple steps to find your perfect home</p>
+      {/* ── Why FlatmateFind ──────────────────────────────────────────────── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-12">
+          <span className="inline-block text-xs font-semibold tracking-widest text-teal-600 uppercase mb-3">Why FlatmateFind</span>
+          <h2 className="text-3xl font-extrabold text-slate-900 mb-3">The smarter way to find a room in Australia</h2>
+          <p className="text-slate-500 text-base max-w-2xl mx-auto">
+            Designed from the ground up for renters and subletters — not just landlords. Here is what sets us apart.
+          </p>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          {steps.map((s) => (
-            <div key={s.step} className="flex flex-col items-center text-center">
-              <div className="w-12 h-12 bg-teal-100 rounded-full flex items-center justify-center mb-4 relative">
-                <s.icon className="w-5 h-5 text-teal-600" />
-                <span className="absolute -top-1 -right-1 w-5 h-5 bg-teal-600 text-white text-xs font-bold rounded-full flex items-center justify-center">
-                  {s.step}
-                </span>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {WHY_BENEFITS.map((b) => (
+            <div key={b.title} className="bg-white rounded-2xl border border-slate-200 p-6 hover:shadow-md hover:-translate-y-0.5 transition-all duration-200">
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-4 ${b.color}`}>
+                <b.icon className="w-5 h-5" />
               </div>
-              <h3 className="font-semibold text-slate-900 mb-2">{s.title}</h3>
-              <p className="text-sm text-slate-500 leading-relaxed">{s.description}</p>
+              <h3 className="font-bold text-slate-900 mb-2">{b.title}</h3>
+              <p className="text-sm text-slate-500 leading-relaxed">{b.description}</p>
             </div>
           ))}
+        </div>
+        <div className="text-center mt-10">
+          <Link
+            href="/listings"
+            className="inline-flex items-center gap-2 px-6 py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors"
+          >
+            Start browsing for free
+            <ArrowRight className="w-4 h-4" />
+          </Link>
         </div>
       </section>
 
