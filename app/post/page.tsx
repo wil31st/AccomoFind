@@ -1,6 +1,23 @@
 'use client';
 import { useState, FormEvent } from 'react';
-import { CheckCircle, AlertTriangle, Zap, Home as HomeIcon, ArrowLeftRight } from 'lucide-react';
+import { CheckCircle, AlertTriangle, Zap, Home as HomeIcon, ArrowLeftRight, ShoppingCart, Train, Bus, GraduationCap, School, Hospital, Dumbbell, Trees, ShoppingBag, Pill, Coffee, Plane, Umbrella, MapPinned, type LucideIcon } from 'lucide-react';
+
+const NEARBY_ICONS: Record<string, LucideIcon> = {
+  'Supermarket':        ShoppingCart,
+  'Train station':      Train,
+  'Bus stop':           Bus,
+  'Tram stop':          Train,
+  'University / TAFE':  GraduationCap,
+  'School':             School,
+  'Hospital / Clinic':  Hospital,
+  'Gym':                Dumbbell,
+  'Park':               Trees,
+  'Shopping centre':    ShoppingBag,
+  'Pharmacy':           Pill,
+  'Café / Restaurant':  Coffee,
+  'Airport':            Plane,
+  'Beach':              Umbrella,
+};
 import Link from 'next/link';
 import { CITIES, PROPERTY_TYPES, ROOM_CATEGORIES_LIST, INCLUSIONS_LIST, FACILITIES_LIST, ROOM_FEATURES_LIST, ROOM_TERMS_LIST, HOUSE_RULES_LIST, NATIONALITIES, NEARBY_PLACE_TYPES, NearbyPlace } from '@/lib/types';
 import { usePostedListings } from '@/hooks/usePostedListings';
@@ -550,9 +567,13 @@ export default function PostListingPage() {
             Enter walking/driving times or distances to help renters understand the location. Leave blank to skip any place type.
           </p>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {NEARBY_PLACE_TYPES.map(({ type, emoji }) => (
+            {NEARBY_PLACE_TYPES.map(({ type }) => {
+              const Icon = NEARBY_ICONS[type] ?? MapPinned;
+              return (
               <div key={type} className="flex items-center gap-2">
-                <span className="text-base w-6 shrink-0 text-center">{emoji}</span>
+                <div className="w-7 h-7 rounded-lg bg-teal-50 flex items-center justify-center shrink-0">
+                  <Icon className="w-4 h-4 text-teal-600" />
+                </div>
                 <span className="text-sm text-slate-700 w-36 shrink-0">{type}</span>
                 <input
                   type="text"
@@ -562,7 +583,8 @@ export default function PostListingPage() {
                   className="flex-1 text-sm border border-slate-200 rounded-lg py-1.5 px-2.5 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
                 />
               </div>
-            ))}
+              );
+            })}
           </div>
           {/* Custom place */}
           <div className="mt-4 pt-4 border-t border-slate-100">
