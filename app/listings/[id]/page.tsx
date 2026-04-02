@@ -5,7 +5,7 @@ import {
   Bed, Bath, Users, MapPin, ArrowLeft, Check, X,
   Wifi, Car, Dumbbell, Waves, Wind, WashingMachine, UtensilsCrossed,
   Flower2, Lock, ChevronRight, Calendar, Clock,
-  ShoppingCart, Train, Bus, Tram, GraduationCap, School, Hospital,
+  ShoppingCart, Train, Bus, GraduationCap, School, Hospital,
   Trees, ShoppingBag, Pill, Coffee, Plane, Umbrella, MapPinned,
   Zap, Home as HomeIcon, ArrowLeftRight,
 } from 'lucide-react';
@@ -35,7 +35,7 @@ const NEARBY_ICONS: Record<string, React.ElementType> = {
   'Supermarket':        ShoppingCart,
   'Train station':      Train,
   'Bus stop':           Bus,
-  'Tram stop':          Tram,
+  'Tram stop':          Train,
   'University / TAFE':  GraduationCap,
   'School':             School,
   'Hospital / Clinic':  Hospital,
