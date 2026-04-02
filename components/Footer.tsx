@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home } from 'lucide-react';
+import { Home, Globe, CheckCircle } from 'lucide-react';
 
 const footerLinks = {
   renters: {
@@ -78,8 +78,8 @@ export default function Footer() {
               Australia&apos;s free flatmate and share-house board. Find your perfect room or list your place — no fees, no fuss.
             </p>
             <div className="flex flex-wrap gap-2 text-xs text-slate-500">
-              <span className="px-2 py-1 bg-slate-800 rounded-full">🇦🇺 Australia-wide</span>
-              <span className="px-2 py-1 bg-slate-800 rounded-full">✅ Free to browse</span>
+              <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-800 rounded-full"><Globe className="w-3 h-3 text-teal-400" /> Australia-wide</span>
+              <span className="flex items-center gap-1.5 px-2.5 py-1 bg-slate-800 rounded-full"><CheckCircle className="w-3 h-3 text-teal-400" /> Free to browse</span>
             </div>
           </div>
 

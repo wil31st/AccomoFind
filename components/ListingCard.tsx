@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bed, Bath, Users, BadgeCheck, Heart, GitCompareArrows, Eye } from 'lucide-react';
+import { Bed, Bath, Users, BadgeCheck, Heart, GitCompareArrows, Eye, Flame } from 'lucide-react';
 import { Listing } from '@/lib/types';
 import { useFavorites } from '@/hooks/useFavorites';
 import { useCompare } from '@/hooks/useCompare';
@@ -102,7 +102,7 @@ export default function ListingCard({ listing }: ListingCardProps) {
         {views > 0 && (
           <div className="absolute bottom-3 left-3 flex items-center gap-1 bg-black/50 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
             <Eye className="w-3 h-3" />
-            {views >= 80 ? <span className="font-semibold text-orange-300">🔥 {views}</span> : views}
+            {views >= 80 ? <><Flame className="w-3 h-3 text-orange-300" /><span className="font-semibold text-orange-300">{views}</span></> : views}
           </div>
         )}
         {/* Heart / Save button — top right */}
