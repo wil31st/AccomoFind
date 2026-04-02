@@ -2,7 +2,7 @@ import { listings } from '@/data/listings';
 import { SearchFilters, Listing } from './types';
 
 export function filterListings(filters: SearchFilters): Listing[] {
-  return listings.filter((listing) => {
+  const results = listings.filter((listing) => {
     // Exclude taken/expired listings from search results
     if (listing.status === 'taken' || listing.status === 'expired') return false;
     if (filters.state && listing.location.state.toUpperCase() !== filters.state.toUpperCase()) return false;
@@ -27,6 +27,19 @@ export function filterListings(filters: SearchFilters): Listing[] {
       if (!searchable.includes(q)) return false;
     }
     return true;
+  });
+
+  const sort = filters.sort ?? 'newest';
+  return results.sort((a, b) => {
+    switch (sort) {
+      case 'price-asc':      return a.rent.amount - b.rent.amount;
+      case 'price-desc':     return b.rent.amount - a.rent.amount;
+      case 'available-soon': return a.availableFrom.localeCompare(b.availableFrom);
+      case 'available-later':return b.availableFrom.localeCompare(a.availableFrom);
+      case 'oldest':         return a.postedAt.localeCompare(b.postedAt);
+      case 'newest':
+      default:               return b.postedAt.localeCompare(a.postedAt);
+    }
   });
 }
 

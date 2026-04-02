@@ -1,23 +1,41 @@
 'use client';
-import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
-import { Loader2, SearchX } from 'lucide-react';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { useEffect, useState, useCallback } from 'react';
+import { Loader2, SearchX, ArrowUpDown } from 'lucide-react';
 import ListingCard from '@/components/ListingCard';
 import AdSlot from '@/components/AdSlot';
-import { Listing } from '@/lib/types';
+import { Listing, SortOption } from '@/lib/types';
+
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'newest',         label: 'Newest first' },
+  { value: 'oldest',         label: 'Oldest first' },
+  { value: 'price-asc',      label: 'Price: low to high' },
+  { value: 'price-desc',     label: 'Price: high to low' },
+  { value: 'available-soon', label: 'Available soonest' },
+  { value: 'available-later',label: 'Available latest' },
+];
 
 export default function ListingsGrid() {
   const params = useSearchParams();
+  const router = useRouter();
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
   const [total, setTotal] = useState(0);
+
+  const currentSort = (params.get('sort') as SortOption) || 'newest';
+
+  const handleSort = useCallback((sort: SortOption) => {
+    const next = new URLSearchParams(params.toString());
+    next.set('sort', sort);
+    router.push(`/listings?${next.toString()}`);
+  }, [params, router]);
 
   useEffect(() => {
     const fetchListings = async () => {
       setLoading(true);
       try {
         const apiParams = new URLSearchParams();
-        const keys = ['state', 'city', 'type', 'minRent', 'maxRent', 'bedrooms', 'furnished', 'nationality', 'gender', 'petsAllowed', 'availableBy', 'query'];
+        const keys = ['state', 'city', 'type', 'minRent', 'maxRent', 'bedrooms', 'furnished', 'nationality', 'gender', 'petsAllowed', 'availableBy', 'query', 'sort'];
         for (const k of keys) {
           const v = params.get(k);
           if (v) apiParams.set(k, v);
@@ -47,11 +65,23 @@ export default function ListingsGrid() {
 
   return (
     <div className="flex-1 min-w-0">
-      {/* Results count */}
-      <div className="mb-5">
+      {/* Results count + sort */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-5">
         <h2 className="text-base font-semibold text-slate-900">
           {total} room{total !== 1 ? 's' : ''} &amp; apartment{total !== 1 ? 's' : ''} found
         </h2>
+        <div className="flex items-center gap-2">
+          <ArrowUpDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+          <select
+            value={currentSort}
+            onChange={(e) => handleSort(e.target.value as SortOption)}
+            className="text-sm border border-slate-200 rounded-lg px-3 py-1.5 bg-white text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-400 cursor-pointer"
+          >
+            {SORT_OPTIONS.map((o) => (
+              <option key={o.value} value={o.value}>{o.label}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       {listings.length === 0 ? (

@@ -50,6 +50,8 @@ export interface Listing {
   featured?: boolean;
 }
 
+export type SortOption = 'newest' | 'oldest' | 'price-asc' | 'price-desc' | 'available-soon' | 'available-later';
+
 export interface SearchFilters {
   state?: string;
   city?: string;
@@ -63,6 +65,7 @@ export interface SearchFilters {
   petsAllowed?: boolean;
   availableBy?: string;   // ISO date YYYY-MM-DD — show listings available on or before this date
   query?: string;
+  sort?: SortOption;
 }
 
 export interface AustralianState {
