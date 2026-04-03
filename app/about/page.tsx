@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Home, Search, Shield, Heart } from 'lucide-react';
+import { Home, Search, Shield, Heart, Mail, MessageCircle } from 'lucide-react';
 
 const values = [
   {
@@ -80,12 +80,58 @@ export default function AboutPage() {
       </section>
 
       {/* CTA */}
-      <div className="text-center">
+      <div className="text-center mb-14">
         <Link href="/listings" className="inline-flex items-center gap-2 bg-teal-600 text-white font-semibold px-6 py-3 rounded-lg hover:bg-teal-700 transition-colors">
           Browse listings
         </Link>
         <p className="text-xs text-slate-400 mt-3">Free to browse · No account required</p>
       </div>
+
+      {/* Contact */}
+      <section id="contact" className="bg-white border border-slate-200 rounded-2xl p-8">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="p-2.5 bg-teal-50 rounded-xl shrink-0">
+            <MessageCircle className="w-5 h-5 text-teal-600" />
+          </div>
+          <h2 className="text-xl font-bold text-slate-900">Contact us</h2>
+        </div>
+        <p className="text-sm text-slate-500 leading-relaxed mb-6">
+          Have a question, spotted a scam listing, or want to advertise on FlatmateFind? We&apos;d love to hear from you.
+        </p>
+        <div className="space-y-3">
+          <a
+            href="mailto:hello@flatmatefind.com.au"
+            className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl hover:bg-teal-50 transition-colors group"
+          >
+            <Mail className="w-5 h-5 text-teal-600 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-slate-800 group-hover:text-teal-700">General enquiries</p>
+              <p className="text-xs text-slate-500">hello@flatmatefind.com.au</p>
+            </div>
+          </a>
+          <a
+            href="mailto:support@flatmatefind.com.au"
+            className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl hover:bg-teal-50 transition-colors group"
+          >
+            <Mail className="w-5 h-5 text-teal-600 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-slate-800 group-hover:text-teal-700">Report a listing or scam</p>
+              <p className="text-xs text-slate-500">support@flatmatefind.com.au</p>
+            </div>
+          </a>
+          <a
+            href="mailto:ads@flatmatefind.com.au"
+            className="flex items-center gap-3 p-4 bg-slate-50 rounded-xl hover:bg-teal-50 transition-colors group"
+          >
+            <Mail className="w-5 h-5 text-teal-600 shrink-0" />
+            <div>
+              <p className="text-sm font-semibold text-slate-800 group-hover:text-teal-700">Advertising &amp; partnerships</p>
+              <p className="text-xs text-slate-500">ads@flatmatefind.com.au</p>
+            </div>
+          </a>
+        </div>
+        <p className="text-xs text-slate-400 mt-5">We aim to respond within 1–2 business days.</p>
+      </section>
     </div>
   );
 }
