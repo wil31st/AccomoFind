@@ -14,6 +14,7 @@ export interface JobPost {
   postedByRole: 'renter' | 'subletter';
   postedAt: string;
   status: 'active' | 'closed';
+  languages?: string[];
 }
 
 export const SEED_JOBS: JobPost[] = [
@@ -31,6 +32,7 @@ export const SEED_JOBS: JobPost[] = [
     postedByRole: 'subletter',
     postedAt: '2026-04-01T08:00:00.000Z',
     status: 'active',
+    languages: ['English'],
   },
   {
     id: 'job-002',
@@ -105,6 +107,7 @@ export const SEED_JOBS: JobPost[] = [
     postedByRole: 'subletter',
     postedAt: '2026-03-27T11:00:00.000Z',
     status: 'active',
+    languages: ['English', 'Mandarin'],
   },
   {
     id: 'job-007',
@@ -120,6 +123,7 @@ export const SEED_JOBS: JobPost[] = [
     postedByRole: 'renter',
     postedAt: '2026-03-26T13:45:00.000Z',
     status: 'active',
+    languages: ['Japanese', 'English'],
   },
   {
     id: 'job-008',

@@ -7,7 +7,7 @@ import { useAuth } from '@/context/AuthContext';
 import AuthPromptModal from '@/components/AuthPromptModal';
 import { useJobListings } from '@/hooks/useJobListings';
 import { checkSpam } from '@/lib/spamGuard';
-import { AUSTRALIAN_STATES } from '@/lib/types';
+import { AUSTRALIAN_STATES, LANGUAGES } from '@/lib/types';
 import { JobType } from '@/data/jobs';
 
 const JOB_TYPES: JobType[] = ['Full-time', 'Part-time', 'Casual', 'Contract', 'Remote', 'Internship'];
@@ -34,6 +34,7 @@ export default function PostJobPage() {
   const [salary, setSalary] = useState('');
   const [description, setDescription] = useState('');
   const [contactEmail, setContactEmail] = useState('');
+  const [languages, setLanguages] = useState<string[]>([]);
 
   // No redirect — unauthenticated users can fill the form, gated on submit
 
@@ -96,6 +97,7 @@ export default function PostJobPage() {
       salary: salary.trim() || undefined,
       description: description.trim(),
       contactEmail: contactEmail.trim(),
+      languages: languages.length ? languages : undefined,
       postedByName: user.name,
       postedByRole: user.role,
       postedAt: new Date().toISOString(),
@@ -236,6 +238,25 @@ export default function PostJobPage() {
           <input type="email" value={contactEmail} onChange={(e) => setContactEmail(e.target.value)} placeholder="applicants@youremail.com" className={inputClass} />
           {errors.contactEmail && <p className="text-red-500 text-xs mt-1">{errors.contactEmail}</p>}
           <p className="text-xs text-slate-400 mt-1">Only shown to signed-in users who click &ldquo;Apply&rdquo;.</p>
+        </div>
+
+        {/* Languages */}
+        <div>
+          <label className="block text-sm font-medium text-slate-700 mb-1">Languages</label>
+          <p className="text-xs text-slate-400 mb-2">Select languages spoken at this workplace (helps bilingual renters find you)</p>
+          <div className="grid grid-cols-3 sm:grid-cols-4 gap-1.5">
+            {LANGUAGES.map((lang) => (
+              <label key={lang} className="flex items-center gap-2 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  checked={languages.includes(lang)}
+                  onChange={() => setLanguages((prev) => prev.includes(lang) ? prev.filter((l) => l !== lang) : [...prev, lang])}
+                  className="w-3.5 h-3.5 rounded text-teal-600 border-slate-300 focus:ring-teal-500"
+                />
+                <span className="text-xs text-slate-700 group-hover:text-teal-600 transition-colors">{lang}</span>
+              </label>
+            ))}
+          </div>
         </div>
 
         <button type="submit" className="w-full py-3 bg-teal-600 text-white font-semibold rounded-lg hover:bg-teal-700 transition-colors text-sm">

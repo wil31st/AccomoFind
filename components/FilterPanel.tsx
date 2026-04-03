@@ -1,6 +1,6 @@
 'use client';
 import { SlidersHorizontal, X, Calendar } from 'lucide-react';
-import { SearchFilters, AUSTRALIAN_STATES, PROPERTY_TYPES, NATIONALITIES } from '@/lib/types';
+import { SearchFilters, AUSTRALIAN_STATES, PROPERTY_TYPES, NATIONALITIES, LANGUAGES } from '@/lib/types';
 
 interface FilterPanelProps {
   filters: SearchFilters;
@@ -226,6 +226,24 @@ export default function FilterPanel({ filters, onChange }: FilterPanelProps) {
               Clear date
             </button>
           )}
+        </div>
+
+        {/* Language */}
+        <div className="mb-5">
+          <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">
+            Host Language
+          </label>
+          <p className="text-xs text-slate-400 mb-2">Show listings where the host speaks your language</p>
+          <select
+            value={filters.language || ''}
+            onChange={(e) => update('language', e.target.value)}
+            className="w-full text-sm border border-slate-200 rounded-lg py-2 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none"
+          >
+            <option value="">Any language</option>
+            {LANGUAGES.map((l) => (
+              <option key={l} value={l}>{l}</option>
+            ))}
+          </select>
         </div>
 
         {/* Pets allowed */}

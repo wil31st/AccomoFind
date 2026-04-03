@@ -16,6 +16,7 @@ export async function GET(request: NextRequest) {
     gender: searchParams.get('gender') || undefined,
     petsAllowed: searchParams.get('petsAllowed') === 'true' ? true : undefined,
     availableBy: searchParams.get('availableBy') || undefined,
+    language: searchParams.get('language') || undefined,
     query: searchParams.get('query') || undefined,
     sort: (searchParams.get('sort') as SortOption) || undefined,
   };

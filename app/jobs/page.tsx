@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Briefcase, PlusCircle, Filter } from 'lucide-react';
 import { SEED_JOBS, JobPost, JobType } from '@/data/jobs';
+import { LANGUAGES } from '@/lib/types';
 import { useAuth } from '@/context/AuthContext';
 import JobCard from '@/components/JobCard';
 import AdSlot from '@/components/AdSlot';
@@ -13,6 +14,7 @@ export default function JobsPage() {
   const { user } = useAuth();
   const [allJobs, setAllJobs] = useState<JobPost[]>(SEED_JOBS);
   const [filter, setFilter] = useState<JobType | 'All'>('All');
+  const [langFilter, setLangFilter] = useState('');
 
   useEffect(() => {
     try {
@@ -24,7 +26,9 @@ export default function JobsPage() {
     } catch { /* ignore */ }
   }, []);
 
-  const filtered = filter === 'All' ? allJobs : allJobs.filter((j) => j.type === filter);
+  const filtered = allJobs
+    .filter((j) => filter === 'All' || j.type === filter)
+    .filter((j) => !langFilter || (j.languages && j.languages.includes(langFilter)));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -49,8 +53,8 @@ export default function JobsPage() {
       <div className="lg:grid lg:grid-cols-3 lg:gap-8">
         {/* ── Left: job list ─────────────────────────────────────────────── */}
         <div className="lg:col-span-2">
-          {/* Filter pills */}
-          <div className="flex items-center gap-2 flex-wrap mb-5">
+          {/* Filter pills + language */}
+          <div className="flex items-center gap-2 flex-wrap mb-3">
             <Filter className="w-3.5 h-3.5 text-slate-400 shrink-0" />
             {(['All', ...ALL_TYPES] as const).map((t) => (
               <button
@@ -65,6 +69,19 @@ export default function JobsPage() {
                 {t}
               </button>
             ))}
+          </div>
+          <div className="flex items-center gap-2 mb-5">
+            <select
+              value={langFilter}
+              onChange={(e) => setLangFilter(e.target.value)}
+              className="text-xs border border-slate-200 rounded-lg py-1.5 px-3 focus:ring-2 focus:ring-teal-500 focus:border-teal-500 outline-none bg-white text-slate-600"
+            >
+              <option value="">All languages</option>
+              {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
+            </select>
+            {langFilter && (
+              <button onClick={() => setLangFilter('')} className="text-xs text-slate-400 hover:text-red-500 transition-colors">Clear</button>
+            )}
           </div>
 
           {/* Job list — scrollable on large screens */}

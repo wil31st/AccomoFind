@@ -2,6 +2,13 @@ export type ListingType =
   | 'private room' | 'whole apartment' | 'whole house' | 'studio' | 'shared room'
   | 'master room' | 'second room' | 'study room' | 'sunny room' | 'living room' | 'self-contained';
 
+export const LANGUAGES = [
+  'English', 'Mandarin', 'Cantonese', 'Hindi', 'Korean', 'Japanese',
+  'Vietnamese', 'Thai', 'Tagalog', 'Arabic', 'Spanish', 'French',
+  'Portuguese', 'Nepali', 'Tamil', 'Punjabi', 'Indonesian', 'Malay',
+  'Bengali', 'Urdu', 'Sinhalese',
+];
+
 export interface Listing {
   id: string;
   title: string;
@@ -28,6 +35,7 @@ export interface Listing {
   facilities: string[];
   roomFeatures?: string[];
   roomCategories?: string[];
+  languages?: string[];
   preferredNationality: string[];
   preferredGender: 'male' | 'female' | 'any';
   petsAllowed: boolean;
@@ -64,6 +72,7 @@ export interface SearchFilters {
   gender?: string;
   petsAllowed?: boolean;
   availableBy?: string;   // ISO date YYYY-MM-DD — show listings available on or before this date
+  language?: string;
   query?: string;
   sort?: SortOption;
 }
