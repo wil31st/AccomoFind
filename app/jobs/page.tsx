@@ -82,7 +82,7 @@ export default function JobsPage() {
             <select
               value={stateFilter}
               onChange={(e) => setStateFilter(e.target.value)}
-              className="text-xs border border-slate-200 rounded-lg py-1.5 px-3 focus:ring-2 focus:ring-teal-500 outline-none bg-white text-slate-600"
+              className="text-xs border border-slate-200 rounded-lg py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-teal-500 outline-none bg-white text-slate-600"
             >
               <option value="">All states</option>
               {AUSTRALIAN_STATES.map((s) => (
@@ -92,7 +92,7 @@ export default function JobsPage() {
             <select
               value={langFilter}
               onChange={(e) => setLangFilter(e.target.value)}
-              className="text-xs border border-slate-200 rounded-lg py-1.5 px-3 focus:ring-2 focus:ring-teal-500 outline-none bg-white text-slate-600"
+              className="text-xs border border-slate-200 rounded-lg py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-teal-500 outline-none bg-white text-slate-600"
             >
               <option value="">All languages</option>
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
@@ -102,7 +102,7 @@ export default function JobsPage() {
               <select
                 value={sort}
                 onChange={(e) => setSort(e.target.value as 'newest' | 'oldest')}
-                className="text-xs border border-slate-200 rounded-lg py-1.5 px-3 focus:ring-2 focus:ring-teal-500 outline-none bg-white text-slate-600"
+                className="text-xs border border-slate-200 rounded-lg py-1.5 pl-3 pr-8 focus:ring-2 focus:ring-teal-500 outline-none bg-white text-slate-600"
               >
                 <option value="newest">Newest first</option>
                 <option value="oldest">Oldest first</option>
@@ -182,7 +182,7 @@ export default function JobsPage() {
           )}
 
           {/* Ad slot */}
-          <AdSlot size="rectangle" />
+          <AdSlot size="rectangle" slotId="jobs-sidebar" />
         </div>
       </div>
     </div>

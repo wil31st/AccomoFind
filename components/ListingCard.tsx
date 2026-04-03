@@ -16,11 +16,11 @@ interface ListingCardProps {
 }
 
 const TYPE_COLORS: Record<string, string> = {
-  'private room': 'bg-teal-500 text-white',
-  'whole apartment': 'bg-indigo-500 text-white',
-  'whole house': 'bg-emerald-500 text-white',
-  'studio': 'bg-violet-500 text-white',
-  'shared room': 'bg-rose-500 text-white',
+  'private room':    'bg-sky-500 text-white',
+  'whole apartment': 'bg-indigo-600 text-white',
+  'whole house':     'bg-emerald-600 text-white',
+  'studio':          'bg-amber-500 text-white',
+  'shared room':     'bg-rose-500 text-white',
 };
 
 export default function ListingCard({ listing }: ListingCardProps) {

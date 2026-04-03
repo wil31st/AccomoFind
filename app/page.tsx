@@ -12,12 +12,12 @@ import { AUSTRALIAN_STATES } from '@/lib/types';
 const STATE_META: Record<string, { highlight: string }> = {
   NSW: { highlight: 'Sydney & more' },
   VIC: { highlight: 'Melbourne & more' },
-  QLD: { highlight: 'Brisbane, Gold Coast & more' },
-  WA:  { highlight: 'Perth & surrounds' },
-  SA:  { highlight: 'Adelaide & Barossa' },
-  TAS: { highlight: 'Hobart & Launceston' },
-  ACT: { highlight: 'Canberra' },
-  NT:  { highlight: 'Darwin & Alice Springs' },
+  QLD: { highlight: 'Brisbane & more' },
+  WA:  { highlight: 'Perth & more' },
+  SA:  { highlight: 'Adelaide & more' },
+  TAS: { highlight: 'Hobart & more' },
+  ACT: { highlight: 'Canberra & more' },
+  NT:  { highlight: 'Darwin & more' },
 };
 
 
@@ -137,7 +137,7 @@ export default function HomePage() {
 
       {/* ── Ad banner ────────────────────────────────────────────────────── */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-        <AdSlot size="leaderboard" />
+        <AdSlot size="leaderboard" slotId="home-leaderboard" />
       </div>
 
       {/* ── Popular listings ──────────────────────────────────────────────── */}

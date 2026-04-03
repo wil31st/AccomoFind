@@ -29,7 +29,7 @@ const footerLinks = {
 
 const bottomLinks = [
   { label: 'About', href: '/about' },
-  { label: 'Contact', href: '/about#contact' },
+  { label: 'Contact', href: '/contact' },
   { label: 'Privacy Policy', href: '/privacy' },
   { label: 'Cookie Policy', href: '/privacy#cookies' },
   { label: 'Terms of Service', href: '/terms' },
